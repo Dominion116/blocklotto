@@ -11,7 +11,10 @@ Features:
 
 Note: The UI uses `@stacks/connect` to open transactions in the Hiro Wallet extension. Make sure you have a compatible wallet installed.
 
-Setup
+ Environment
+ 
+ The frontend calls the contract's read-only functions directly using `@stacks/transactions`.
+ Ensure you set your `.env` with `VITE_CONTRACT_ADDRESS` and `VITE_CONTRACT_NAME` before running.
 
 ```bash
 cd web
