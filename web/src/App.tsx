@@ -18,6 +18,11 @@ export default function App() {
 
   useEffect(() => {
     // fetch-lottery info via read-only call
+    if (!CONTRACT_ADDRESS) {
+      setStatus('No contract address configured')
+      return
+    }
+    
     (async () => {
       try {
         // call read-only function `get-lottery-info`
@@ -28,6 +33,7 @@ export default function App() {
           functionName: 'get-lottery-info',
           functionArgs: [],
           network,
+          senderAddress: CONTRACT_ADDRESS,
         })
         const infoJs = cvToValue(info)
         setStatus(String(infoJs.status))
@@ -43,12 +49,14 @@ export default function App() {
           functionName: 'get-participants',
           functionArgs: [],
           network,
+          senderAddress: CONTRACT_ADDRESS,
         })
         const partsJs = cvToValue(parts)
         // partsJs is a list of principal strings
         setParticipants(partsJs.map((p: any) => p))
       } catch (e) {
-        setStatus('error')
+        console.error('Error fetching contract data:', e)
+        setStatus('error connecting to contract')
       }
     })()
   }, [])
