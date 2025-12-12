@@ -16,8 +16,24 @@ Clarinet.test({
     const currentHeight = chain.blockHeight;
     const target = currentHeight + 2;
 
-    // init
+    // init (deployer becomes creator/admin)
     let block = chain.mineBlock([Tx.contractCall(CONTRACT, 'init', [types.uint(target)], deployer.address)])
+    block.receipts[0].result.expectOk();
+
+    // Admin pauses the lottery
+    block = chain.mineBlock([Tx.contractCall(CONTRACT, 'pause', [], deployer.address)])
+    block.receipts[0].result.expectOk();
+
+    // Wallet_1 tries to enter while paused -> should error
+    block = chain.mineBlock([Tx.contractCall(CONTRACT, 'enter-lottery', [], wallet_1.address)])
+    block.receipts[0].result.expectErr();
+
+    // Non-admin cannot unpause (should error)
+    block = chain.mineBlock([Tx.contractCall(CONTRACT, 'unpause', [], wallet_1.address)])
+    block.receipts[0].result.expectErr();
+
+    // Admin unpauses
+    block = chain.mineBlock([Tx.contractCall(CONTRACT, 'unpause', [], deployer.address)])
     block.receipts[0].result.expectOk();
 
     // wallet_1 enters
@@ -42,15 +58,12 @@ Clarinet.test({
     block.receipts[0].result.expectOk();
 
     // get winner
-    block = chain.mineBlock([Tx.contractCall(CONTRACT, 'get-winner', [], deployer.address)])
-    const winnerRes = block.receipts[0].result.expectOk();
+      block = chain.mineBlock([Tx.contractCall(CONTRACT, 'get-winner', [], deployer.address)])
+      block.receipts[0].result.expectOk();
 
     // winner must be one of the three wallets
-    const winner = winnerRes;
-    // Attempt claim by winner
+    // Attempt claim by wallet_1 (may or may not be winner); ensure no panic
     block = chain.mineBlock([Tx.contractCall(CONTRACT, 'claim-prize', [], wallet_1.address)])
-    // result could be ok or err depending if wallet_1 is winner
-    // so just ensure contract doesn't panic
   }
 })
 
