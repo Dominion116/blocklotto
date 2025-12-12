@@ -1,62 +1,21 @@
-/* Minimal base styles (Tailwind removed for this environment) */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  --bg: #000;
-  --muted: #666;
-  --card-bg: #050505;
+@layer base {
+  :root {
+    --bg: #000;
+  }
+
+  html, body, #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background: var(--bg);
+    color: #fff;
+    font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  }
 }
-
-html, body, #root {
-  height: 100%;
-  margin: 0;
-}
-
-body {
-  background: var(--bg);
-  color: #fff;
-  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-}
-
-.min-h-screen { min-height: 100vh; }
-.p-8 { padding: 2rem; }
-.font-sans { font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto; }
-.mb-8 { margin-bottom: 2rem; }
-.text-4xl { font-size: 2.25rem; }
-.text-gray-400 { color: #9CA3AF; }
-.grid { display: grid; }
-.grid-cols-3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
-.gap-6 { gap: 1.5rem; }
-.col-span-2 { grid-column: span 2 / span 2; }
-.border { border-width: 1px; }
-.border-gray-800 { border-color: #1f2937; }
-.rounded-md { border-radius: 0.375rem; }
-.p-4 { padding: 1rem; }
-.bg-[#050505] { background: var(--card-bg); }
-.text-sm { font-size: 0.875rem; }
-.text-2xl { font-size: 1.5rem; }
-.font-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', 'Courier New', monospace; }
-.space-y-2 > * + * { margin-top: 0.5rem; }
-.text-gray-500 { color: #6B7280; }
-.text-gray-300 { color: #D1D5DB; }
-.text-gray-400 { color: #9CA3AF; }
-.h-32 { height: 8rem; }
-.flex { display:flex; }
-.items-center { align-items:center; }
-.justify-center { justify-content:center; }
-.space-y-2 { display:block; }
-.bg-white { background: #fff; }
-.text-black { color: #000; }
-.px-4 { padding-left: 1rem; padding-right: 1rem; }
-.py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
-.rounded-md { border-radius: 0.375rem; }
-.hover\:brightness-90:hover { filter: brightness(0.9); }
-.disabled\:opacity-50:disabled { opacity: 0.5; }
-.space-y-2 { display:block; }
-.mt-6 { margin-top: 1.5rem; }
-.grid-cols-2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
-.gap-4 { gap: 1rem; }
-.col-span-2 { grid-column: span 2 / span 2; }
-.mt-12 { margin-top: 3rem; }
-.text-sm { font-size: 0.875rem; }
-.text-gray-500 { color: #6B7280; }
-
