@@ -354,8 +354,25 @@
     min-players: min-players,
     max-participants: max-participants,
     winner: (var-get winner),
-    creator: (var-get creator)
+    creator: (var-get creator),
+    paused: (var-get paused)
   }))
+
+;; Read-only: return list of participants as a clarity-list of principals
+;; Iterates from 0 to total-participants-1 and collects participants
+(define-read-only (get-participants)
+  (letrec (
+    ;; loop: (i acc)
+    ((loop (i acc)
+       (if (>= i (var-get total-participants))
+           (ok acc)
+           (let ((entry (map-get? participant-by-index {index: i})))
+             (match entry
+               some-row
+               (loop (+ i u1) (cons (get participant some-row) acc))
+               none
+               (loop (+ i u1) acc))))))
+    (loop u0 (list))))
 
 (define-read-only (get-participant (p principal))
   (ok (map-get? participant-index {participant: p})))
