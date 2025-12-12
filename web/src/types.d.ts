@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 declare module '@stacks/connect' {
   export function openContractCall(opts: any): any;
 }
@@ -21,13 +23,3 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv
 }
-
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      [elemName: string]: any
-    }
-  }
-}
-
-export {}
