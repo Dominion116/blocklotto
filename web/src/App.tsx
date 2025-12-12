@@ -1,65 +1,18 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { openContractCall } from '@stacks/connect'
-import { StacksTestnet, StacksMainnet } from '@stacks/network'
-import { callReadOnlyFunction, cvToValue } from '@stacks/transactions'
 import { Button } from './components/button'
 import { Card } from './components/card'
 
-const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || ''
+const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM'
 const CONTRACT_NAME = import.meta.env.VITE_CONTRACT_NAME || 'block-lotto'
 
 export default function App() {
-  const [status, setStatus] = useState<string>('loading')
-  const [targetBlock, setTargetBlock] = useState<number>(0)
-  const [participants, setParticipants] = useState<string[]>([])
-  const [totalParticipants, setTotalParticipants] = useState<number>(0)
-  const [winner, setWinner] = useState<string | null>(null)
-  const [paused, setPaused] = useState<boolean>(false)
-
-  useEffect(() => {
-    // fetch-lottery info via read-only call
-    if (!CONTRACT_ADDRESS) {
-      setStatus('No contract address configured')
-      return
-    }
-    
-    (async () => {
-      try {
-        // call read-only function `get-lottery-info`
-        const network = (import.meta.env.VITE_MAINNET === 'true') ? new StacksMainnet() : new StacksTestnet()
-        const info = await callReadOnlyFunction({
-          contractAddress: CONTRACT_ADDRESS,
-          contractName: CONTRACT_NAME,
-          functionName: 'get-lottery-info',
-          functionArgs: [],
-          network,
-          senderAddress: CONTRACT_ADDRESS,
-        })
-        const infoJs = cvToValue(info)
-        setStatus(String(infoJs.status))
-        setTargetBlock(Number(infoJs['target-block-height']))
-        setTotalParticipants(Number(infoJs['total-participants']))
-        setWinner(infoJs.winner?.value ?? null)
-        setPaused(!!infoJs.paused)
-
-        // call read-only function `get-participants` and decode list
-        const parts = await callReadOnlyFunction({
-          contractAddress: CONTRACT_ADDRESS,
-          contractName: CONTRACT_NAME,
-          functionName: 'get-participants',
-          functionArgs: [],
-          network,
-          senderAddress: CONTRACT_ADDRESS,
-        })
-        const partsJs = cvToValue(parts)
-        // partsJs is a list of principal strings
-        setParticipants(partsJs.map((p: any) => p))
-      } catch (e) {
-        console.error('Error fetching contract data:', e)
-        setStatus('error connecting to contract')
-      }
-    })()
-  }, [])
+  const [status] = useState<string>('Ready (Connect wallet to interact)')
+  const [targetBlock] = useState<number>(0)
+  const [participants] = useState<string[]>([])
+  const [totalParticipants] = useState<number>(0)
+  const [winner] = useState<string | null>(null)
+  const [paused] = useState<boolean>(false)
 
   // Note: In a production app we'd integrate Hiro Wallet via @stacks/connect with network config
   const handleEnter = async () => {
