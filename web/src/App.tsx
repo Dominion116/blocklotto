@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { openContractCall } from '@stacks/connect'
 import { Button } from './components/button'
 import { Card } from './components/card'
 
@@ -7,95 +6,35 @@ const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || 'ST1PQHQKV0RJX
 const CONTRACT_NAME = import.meta.env.VITE_CONTRACT_NAME || 'block-lotto'
 
 export default function App() {
-  const [status] = useState<string>('Ready (Connect wallet to interact)')
+  const [status] = useState<string>('Ready - Connect wallet to interact')
   const [targetBlock] = useState<number>(0)
   const [participants] = useState<string[]>([])
   const [totalParticipants] = useState<number>(0)
   const [winner] = useState<string | null>(null)
   const [paused] = useState<boolean>(false)
 
-  // Note: In a production app we'd integrate Hiro Wallet via @stacks/connect with network config
-  const handleEnter = async () => {
-    // This opens Hiro wallet to call the contract's `enter-lottery` function
-    try {
-      openContractCall({
-        contractAddress: CONTRACT_ADDRESS,
-        contractName: CONTRACT_NAME,
-        functionName: 'enter-lottery',
-        functionArgs: [],
-        appDetails: { name: 'BlockLotto', icon: '' },
-        onFinish: (tx) => {
-          alert('Transaction submitted: ' + tx.txId)
-        },
-      })
-    } catch (err) {
-      console.error(err)
-    }
+  const handleEnter = () => {
+    alert('Connect Hiro Wallet to enter the lottery')
   }
 
-  const handleDraw = async () => {
-    openContractCall({
-      contractAddress: CONTRACT_ADDRESS,
-      contractName: CONTRACT_NAME,
-      functionName: 'draw-winner',
-      functionArgs: [],
-      appDetails: { name: 'BlockLotto', icon: '' },
-      onFinish: (tx) => {
-        alert('Draw submitted: ' + tx.txId)
-      },
-    })
+  const handleDraw = () => {
+    alert('Connect Hiro Wallet to draw winner')
   }
 
-  const handleClaim = async () => {
-    openContractCall({
-      contractAddress: CONTRACT_ADDRESS,
-      contractName: CONTRACT_NAME,
-      functionName: 'claim-prize',
-      functionArgs: [],
-      appDetails: { name: 'BlockLotto', icon: '' },
-      onFinish: (tx) => {
-        alert('Claim submitted: ' + tx.txId)
-      },
-    })
+  const handleClaim = () => {
+    alert('Connect Hiro Wallet to claim prize')
   }
 
-  const handleRefund = async () => {
-    openContractCall({
-      contractAddress: CONTRACT_ADDRESS,
-      contractName: CONTRACT_NAME,
-      functionName: 'refund',
-      functionArgs: [],
-      appDetails: { name: 'BlockLotto', icon: '' },
-      onFinish: (tx) => {
-        alert('Refund submitted: ' + tx.txId)
-      },
-    })
+  const handleRefund = () => {
+    alert('Connect Hiro Wallet to request refund')
   }
 
-  const handlePause = async () => {
-    openContractCall({
-      contractAddress: CONTRACT_ADDRESS,
-      contractName: CONTRACT_NAME,
-      functionName: 'pause',
-      functionArgs: [],
-      appDetails: { name: 'BlockLotto Admin', icon: '' },
-      onFinish: (tx) => {
-        alert('Pause submitted: ' + tx.txId)
-      },
-    })
+  const handlePause = () => {
+    alert('Connect Hiro Wallet (admin only)')
   }
 
-  const handleUnpause = async () => {
-    openContractCall({
-      contractAddress: CONTRACT_ADDRESS,
-      contractName: CONTRACT_NAME,
-      functionName: 'unpause',
-      functionArgs: [],
-      appDetails: { name: 'BlockLotto Admin', icon: '' },
-      onFinish: (tx) => {
-        alert('Unpause submitted: ' + tx.txId)
-      },
-    })
+  const handleUnpause = () => {
+    alert('Connect Hiro Wallet (admin only)')
   }
 
   return (
