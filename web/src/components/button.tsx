@@ -5,7 +5,7 @@ export function Button(props: any) {
   return (
     <button
       {...rest}
-      className={"bg-white text-black px-4 py-2 rounded-md hover:brightness-90 disabled:opacity-50 " + className}
+      className={`bg-white text-black px-3 py-2 md:px-4 md:py-2 text-sm md:text-base rounded-md hover:brightness-90 disabled:opacity-50 transition-all ${className}`}
     >
       {children}
     </button>

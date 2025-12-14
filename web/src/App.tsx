@@ -38,64 +38,66 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen p-8 font-sans" style={{ background: '#000' }}>
-      <header className="mb-8">
-        <h1 className="text-4xl font-bold">BlockLotto</h1>
-        <p className="text-gray-400">Decentralized lottery on Stacks</p>
+    <div className="min-h-screen p-4 md:p-8 font-sans" style={{ background: '#000' }}>
+      <header className="mb-6 md:mb-8">
+        <h1 className="text-3xl md:text-4xl font-bold">BlockLotto</h1>
+        <p className="text-sm md:text-base text-gray-400">Decentralized lottery on Stacks</p>
       </header>
 
-      <main className="grid grid-cols-3 gap-6">
-        <section className="col-span-2">
+      <main className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+        <section className="lg:col-span-2 space-y-4 md:space-y-6">
           <Card title="Lottery Status">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-2xl">Status: <span className="font-mono">{status}</span></div>
-                <div className="text-sm text-gray-400">Target block: {targetBlock}</div>
-                <div className="text-sm text-gray-400">Participants: {totalParticipants}</div>
-                <div className="text-sm text-gray-400">Paused: {paused ? 'Yes' : 'No'}</div>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div className="space-y-1">
+                <div className="text-lg md:text-2xl break-words">Status: <span className="font-mono">{status}</span></div>
+                <div className="text-xs md:text-sm text-gray-400">Target block: {targetBlock}</div>
+                <div className="text-xs md:text-sm text-gray-400">Participants: {totalParticipants}</div>
+                <div className="text-xs md:text-sm text-gray-400">Paused: {paused ? 'Yes' : 'No'}</div>
               </div>
-              <div className="space-y-2">
-                <Button onClick={handleEnter}>Enter Lottery (10 STX)</Button>
-                <Button onClick={handleDraw}>Draw Winner</Button>
-                <Button onClick={handleClaim}>Claim Prize</Button>
-                <Button onClick={handleRefund}>Refund</Button>
+              <div className="flex flex-col gap-2 w-full md:w-auto">
+                <Button onClick={handleEnter} className="w-full md:w-auto">Enter Lottery (10 STX)</Button>
+                <Button onClick={handleDraw} className="w-full md:w-auto">Draw Winner</Button>
+                <Button onClick={handleClaim} className="w-full md:w-auto">Claim Prize</Button>
+                <Button onClick={handleRefund} className="w-full md:w-auto">Refund</Button>
               </div>
             </div>
           </Card>
 
-          <div className="mt-6 grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Card title="Participants">
-              <ul className="text-sm text-gray-300">
+              <ul className="text-xs md:text-sm text-gray-300 max-h-48 overflow-y-auto">
                 {participants.length === 0 && <li className="text-gray-500">No participants listed</li>}
-                {participants.map((p) => (
-                  <li key={p}>{p}</li>
+                {participants.map((p, i) => (
+                  <li key={i} className="truncate">{p}</li>
                 ))}
               </ul>
             </Card>
 
             <Card title="Winner">
-              <div>{winner ?? 'No winner yet'}</div>
+              <div className="text-sm md:text-base break-all">{winner ?? 'No winner yet'}</div>
             </Card>
           </div>
         </section>
 
-        <aside>
+        <aside className="space-y-4 md:space-y-6">
           <Card title="Admin">
-            <div className="space-y-2">
-              <Button onClick={handlePause}>Pause</Button>
-              <Button onClick={handleUnpause}>Unpause</Button>
+            <div className="flex flex-col gap-2">
+              <Button onClick={handlePause} className="w-full">Pause</Button>
+              <Button onClick={handleUnpause} className="w-full">Unpause</Button>
             </div>
           </Card>
 
-          <Card title="Theme Preview" >
+          <Card title="Theme Preview" className="hidden md:block">
             <div className="mt-4 bg-black border border-gray-700 h-32 flex items-center justify-center"> 
-              <div className="text-gray-400">Theme: Dark Minimal (attachment)</div>
+              <div className="text-xs md:text-sm text-gray-400 text-center px-2">Theme: Dark Minimal</div>
             </div>
           </Card>
         </aside>
       </main>
 
-      <footer className="mt-12 text-sm text-gray-500">Contract: {CONTRACT_ADDRESS}.{CONTRACT_NAME}</footer>
+      <footer className="mt-8 md:mt-12 text-xs md:text-sm text-gray-500 break-all">
+        Contract: {CONTRACT_ADDRESS}.{CONTRACT_NAME}
+      </footer>
     </div>
   )
 }
