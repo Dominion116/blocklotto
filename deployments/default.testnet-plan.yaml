@@ -10,7 +10,7 @@ plan:
       transactions:
         - contract-publish:
             contract-name: block-lotto
-            expected-sender: ST30SXXN1Q5MXW8TP5NMM74PWXXYM20J4MXH7EKE5
+            expected-sender: ST1D074Q56GZMR50EEC0RBRQC14M9BEJ92B1ZJT66
             cost: 76670
             path: contracts/block-lotto.clar
             anchor-block-only: true
