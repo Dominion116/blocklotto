@@ -45,10 +45,10 @@
 ;; -----------------------------
 ;; Maps
 ;; -----------------------------
-(define-map participant-index ((participant principal)) ((index uint)))
-(define-map participant-by-index ((index uint)) ((participant principal)))
-(define-map payouts ((recipient principal)) ((amount uint)))
-(define-map refund-claimed ((participant principal)) ((claimed bool)))
+(define-map participant-index {participant: principal} {index: uint})
+(define-map participant-by-index {index: uint} {participant: principal})
+(define-map payouts {recipient: principal} {amount: uint})
+(define-map refund-claimed {participant: principal} {claimed: bool})
 
 ;; -----------------------------
 ;; Private functions
@@ -60,12 +60,9 @@
   (let ((existing (map-get? payouts {recipient: recipient})))
     (match existing
       existing-row
-      (begin
-        (map-set payouts {recipient: recipient} {amount: (+ (get amount existing-row) amount)})
-        (ok true))
-      (begin
-        (map-set payouts {recipient: recipient} {amount: amount})
-        (ok true)))))
+      (map-set payouts {recipient: recipient} {amount: (+ (get amount existing-row) amount)})
+      (map-set payouts {recipient: recipient} {amount: amount}))
+    (ok true)))
 
 ;; -----------------------------
 ;; Public functions
@@ -124,13 +121,13 @@
     (asserts! (>= count min-players) (err ERR-NOT-ENOUGH-PLAYERS))
     
     (let ((header-hash (unwrap! (get-block-info? id-header-hash (- block-height u1)) (err ERR-INVALID-STATUS))))
-      (let ((random-seed (buff-to-uint-be (unwrap-panic (as-max-len? header-hash u16)))))
+      (let ((random-seed (mod (+ (len header-hash) block-height) u1000000)))
         (let ((winner-idx (mod random-seed count)))
           (let ((winner-entry (unwrap! (map-get? participant-by-index {index: winner-idx}) (err ERR-WINNER-NOT-SET))))
             (let ((winner-pr (get participant winner-entry)))
               (var-set winner (some winner-pr))
               (var-set status STATUS-COMPLETED)
-              (try! (add-payout winner-pr (* count entry-fee)))
+              (unwrap-panic (add-payout winner-pr (* count entry-fee)))
               (ok winner-pr))))))))
 
 (define-public (claim-prize)
