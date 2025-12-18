@@ -194,72 +194,176 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen p-4 md:p-8 font-sans" style={{ background: '#000' }}>
-      <header className="mb-6 md:mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl md:text-4xl font-bold">BlockLotto</h1>
-          <p className="text-sm md:text-base text-gray-400">Decentralized lottery on Stacks</p>
-        </div>
-        {isConnected ? (
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-400">{address.slice(0, 6)}...{address.slice(-4)}</span>
-            <Button onClick={disconnect}>Disconnect</Button>
+    <div className="min-h-screen bg-black text-white font-sans">
+      {/* Header */}
+      <header className="sticky top-0 z-50 bg-black/95 backdrop-blur-sm border-b border-gray-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
+                BlockLotto
+              </h1>
+              <p className="text-xs sm:text-sm text-gray-400 mt-1">Decentralized lottery on Stacks</p>
+            </div>
+            {isConnected ? (
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
+                <span className="text-xs sm:text-sm text-gray-400 font-mono bg-gray-900 px-3 py-1.5 rounded-lg border border-gray-800">
+                  {address.slice(0, 8)}...{address.slice(-6)}
+                </span>
+                <Button onClick={disconnect} className="w-full sm:w-auto">Disconnect</Button>
+              </div>
+            ) : (
+              <Button onClick={connectWallet} className="w-full sm:w-auto">Connect Wallet</Button>
+            )}
           </div>
-        ) : (
-          <Button onClick={connectWallet}>Connect Wallet</Button>
-        )}
+        </div>
       </header>
 
-      <main className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
-        <section className="lg:col-span-2 space-y-4 md:space-y-6">
-          <Card title="Lottery Status">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="space-y-1">
-                <div className="text-lg md:text-2xl break-words">Status: <span className="font-mono">{status}</span></div>
-                <div className="text-xs md:text-sm text-gray-400">Target block: {targetBlock}</div>
-                <div className="text-xs md:text-sm text-gray-400">Participants: {totalParticipants}</div>
-                <div className="text-xs md:text-sm text-gray-400">Paused: {paused ? 'Yes' : 'No'}</div>
-              </div>
-              <div className="flex flex-col gap-2 w-full md:w-auto">
-                <Button onClick={handleEnter} className="w-full md:w-auto">Enter Lottery (10 STX)</Button>
-                <Button onClick={handleDraw} className="w-full md:w-auto">Draw Winner</Button>
-                <Button onClick={handleClaim} className="w-full md:w-auto">Claim Prize</Button>
-                <Button onClick={handleRefund} className="w-full md:w-auto">Refund</Button>
-              </div>
-            </div>
-          </Card>
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+          {/* Left Column - Main Content */}
+          <section className="xl:col-span-2 space-y-4 sm:space-y-6">
+            {/* Lottery Status Card */}
+            <Card title="Lottery Status">
+              <div className="flex flex-col gap-6">
+                {/* Status Info */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                  <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-800">
+                    <div className="text-xs text-gray-400 mb-1">Status</div>
+                    <div className="text-lg sm:text-xl font-bold font-mono text-green-400">{status}</div>
+                  </div>
+                  <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-800">
+                    <div className="text-xs text-gray-400 mb-1">Target Block</div>
+                    <div className="text-lg sm:text-xl font-bold font-mono">{targetBlock.toLocaleString()}</div>
+                  </div>
+                  <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-800">
+                    <div className="text-xs text-gray-400 mb-1">Participants</div>
+                    <div className="text-lg sm:text-xl font-bold font-mono text-blue-400">{totalParticipants}</div>
+                  </div>
+                  <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-800">
+                    <div className="text-xs text-gray-400 mb-1">Paused</div>
+                    <div className="text-lg sm:text-xl font-bold font-mono">
+                      {paused ? <span className="text-red-400">Yes</span> : <span className="text-green-400">No</span>}
+                    </div>
+                  </div>
+                </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Card title="Participants">
-              <ul className="text-xs md:text-sm text-gray-300 max-h-48 overflow-y-auto">
-                <li className="text-gray-500">Total: {totalParticipants}</li>
-              </ul>
+                {/* Action Buttons */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <Button onClick={handleEnter} className="w-full py-3 text-sm sm:text-base">
+                    🎰 Enter Lottery (10 STX)
+                  </Button>
+                  <Button onClick={handleDraw} className="w-full py-3 text-sm sm:text-base">
+                    🎲 Draw Winner
+                  </Button>
+                  <Button onClick={handleClaim} className="w-full py-3 text-sm sm:text-base">
+                    💰 Claim Prize
+                  </Button>
+                  <Button onClick={handleRefund} className="w-full py-3 text-sm sm:text-base">
+                    💸 Request Refund
+                  </Button>
+                </div>
+              </div>
             </Card>
 
-            <Card title="Winner">
-              <div className="text-sm md:text-base break-all">{winner ?? 'No winner yet'}</div>
+            {/* Participants & Winner Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+              <Card title="Participants">
+                <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-800">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-400">Total Entries</span>
+                    <span className="text-2xl font-bold text-blue-400">{totalParticipants}</span>
+                  </div>
+                  <div className="mt-4 pt-4 border-t border-gray-800">
+                    <span className="text-xs text-gray-500">Prize Pool: {totalParticipants * 10} STX</span>
+                  </div>
+                </div>
+              </Card>
+
+              <Card title="Winner">
+                <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-800">
+                  {winner ? (
+                    <div>
+                      <div className="text-xs text-gray-400 mb-2">Winner Address</div>
+                      <div className="font-mono text-sm break-all text-green-400">{winner}</div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-4">
+                      <div className="text-4xl mb-2">🏆</div>
+                      <div className="text-sm text-gray-500">No winner yet</div>
+                    </div>
+                  )}
+                </div>
+              </Card>
+            </div>
+          </section>
+
+          {/* Right Column - Sidebar */}
+          <aside className="space-y-4 sm:space-y-6">
+            {/* Admin Controls */}
+            <Card title="Admin Controls">
+              <div className="flex flex-col gap-3">
+                <Button onClick={handlePause} className="w-full py-3 bg-red-600 hover:bg-red-700">
+                  ⏸️ Pause Lottery
+                </Button>
+                <Button onClick={handleUnpause} className="w-full py-3 bg-green-600 hover:bg-green-700">
+                  ▶️ Unpause Lottery
+                </Button>
+              </div>
             </Card>
-          </div>
-        </section>
 
-        <aside className="space-y-4 md:space-y-6">
-          <Card title="Admin">
-            <div className="flex flex-col gap-2">
-              <Button onClick={handlePause} className="w-full">Pause</Button>
-              <Button onClick={handleUnpause} className="w-full">Unpause</Button>
-            </div>
-          </Card>
+            {/* Info Card */}
+            <Card title="How It Works" className="hidden lg:block">
+              <div className="space-y-3 text-sm text-gray-400">
+                <div className="flex items-start gap-2">
+                  <span className="text-purple-400 font-bold">1.</span>
+                  <span>Connect your Stacks wallet</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-purple-400 font-bold">2.</span>
+                  <span>Enter the lottery with 10 STX</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-purple-400 font-bold">3.</span>
+                  <span>Wait for target block</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-purple-400 font-bold">4.</span>
+                  <span>Winner takes all!</span>
+                </div>
+              </div>
+            </Card>
 
-          <Card title="Theme Preview" className="hidden md:block">
-            <div className="mt-4 bg-black border border-gray-700 h-32 flex items-center justify-center"> 
-              <div className="text-xs md:text-sm text-gray-400 text-center px-2">Theme: Dark Minimal</div>
-            </div>
-          </Card>
-        </aside>
+            {/* Stats Card - Mobile/Tablet visible */}
+            <Card title="Quick Stats" className="lg:hidden">
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div className="bg-gray-900/50 p-3 rounded border border-gray-800 text-center">
+                  <div className="text-xs text-gray-400">Entry Fee</div>
+                  <div className="text-lg font-bold text-purple-400">10 STX</div>
+                </div>
+                <div className="bg-gray-900/50 p-3 rounded border border-gray-800 text-center">
+                  <div className="text-xs text-gray-400">Min Players</div>
+                  <div className="text-lg font-bold text-purple-400">3</div>
+                </div>
+              </div>
+            </Card>
+          </aside>
+        </div>
       </main>
 
-      <footer className="mt-8 md:mt-12 text-xs md:text-sm text-gray-500 break-all">
-        Contract: {CONTRACT_ADDRESS}.{CONTRACT_NAME}
+      {/* Footer */}
+      <footer className="border-t border-gray-800 mt-8 sm:mt-12 lg:mt-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-xs sm:text-sm text-gray-500">
+            <div className="font-mono break-all text-center sm:text-left">
+              Contract: {CONTRACT_ADDRESS}.{CONTRACT_NAME}
+            </div>
+            <div className="text-gray-600">
+              Built with ❤️ on Stacks
+            </div>
+          </div>
+        </div>
       </footer>
     </div>
   )
