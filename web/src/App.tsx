@@ -92,23 +92,37 @@ export default function App() {
       // Result is a ResponseOk Clarity value
       if (result.type === ClarityType.ResponseOk) {
         const tuple = result.value
-        const data = cvToValue(tuple)
+        console.log('Tuple value:', tuple)
+        console.log('Tuple data:', tuple.data)
         
-        console.log('Converted data:', data)
+        // Access the tuple fields directly
+        const statusCV = tuple.data['status']
+        const targetBlockCV = tuple.data['target-block-height']
+        const participantsCV = tuple.data['total-participants']
+        const pausedCV = tuple.data['paused']
+        const winnerCV = tuple.data['winner']
         
-        const statusNum = Number(data['status'])
-        const targetBlockNum = Number(data['target-block-height'])
-        const participantsNum = Number(data['total-participants'])
+        console.log('Status CV:', statusCV)
+        console.log('Target Block CV:', targetBlockCV)
+        console.log('Participants CV:', participantsCV)
         
-        setStatus(getStatusText(!isNaN(statusNum) ? statusNum : 0))
-        setTargetBlock(!isNaN(targetBlockNum) ? targetBlockNum : 3701042)
-        setTotalParticipants(!isNaN(participantsNum) ? participantsNum : 0)
-        setPaused(data['paused'] === true)
+        // Extract values from Clarity types
+        const statusNum = statusCV.type === ClarityType.UInt ? Number(statusCV.value) : 0
+        const targetBlockNum = targetBlockCV.type === ClarityType.UInt ? Number(targetBlockCV.value) : 3701042
+        const participantsNum = participantsCV.type === ClarityType.UInt ? Number(participantsCV.value) : 0
+        const pausedBool = pausedCV.type === ClarityType.BoolTrue
+        
+        setStatus(getStatusText(statusNum))
+        setTargetBlock(targetBlockNum)
+        setTotalParticipants(participantsNum)
+        setPaused(pausedBool)
         
         // Check if winner exists (optional type)
-        const winnerValue = data['winner']
-        if (winnerValue !== null) {
-          setWinner(winnerValue)
+        if (winnerCV.type === ClarityType.OptionalSome) {
+          const winnerPrincipal = winnerCV.value
+          if (winnerPrincipal.type === ClarityType.PrincipalStandard) {
+            setWinner(winnerPrincipal.address)
+          }
         } else {
           setWinner(null)
         }
