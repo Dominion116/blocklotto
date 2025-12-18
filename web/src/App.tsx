@@ -88,29 +88,39 @@ export default function App() {
       })
       
       console.log('Lottery info result:', result)
+      console.log('Result type:', result.type)
+      console.log('Result value type:', result.value?.type)
+      console.log('All result properties:', Object.keys(result))
+      console.log('All value properties:', result.value ? Object.keys(result.value) : 'no value')
       
       // Result is a ResponseOk Clarity value
       if (result.type === ClarityType.ResponseOk) {
         const tuple = result.value
-        console.log('Tuple value:', tuple)
+        console.log('Tuple:', tuple)
+        console.log('Tuple properties:', Object.keys(tuple))
         console.log('Tuple data:', tuple.data)
         
         // Access the tuple fields directly
-        const statusCV = tuple.data['status']
-        const targetBlockCV = tuple.data['target-block-height']
-        const participantsCV = tuple.data['total-participants']
-        const pausedCV = tuple.data['paused']
-        const winnerCV = tuple.data['winner']
+        const tupleData = tuple.data || tuple
+        const statusCV = tupleData['status']
+        const targetBlockCV = tupleData['target-block-height']
+        const participantsCV = tupleData['total-participants']
+        const pausedCV = tupleData['paused']
+        const winnerCV = tupleData['winner']
         
         console.log('Status CV:', statusCV)
         console.log('Target Block CV:', targetBlockCV)
         console.log('Participants CV:', participantsCV)
+        console.log('Paused CV:', pausedCV)
+        console.log('Winner CV:', winnerCV)
         
         // Extract values from Clarity types
-        const statusNum = statusCV.type === ClarityType.UInt ? Number(statusCV.value) : 0
-        const targetBlockNum = targetBlockCV.type === ClarityType.UInt ? Number(targetBlockCV.value) : 3701042
-        const participantsNum = participantsCV.type === ClarityType.UInt ? Number(participantsCV.value) : 0
-        const pausedBool = pausedCV.type === ClarityType.BoolTrue
+        const statusNum = statusCV?.type === ClarityType.UInt ? Number(statusCV.value) : 0
+        const targetBlockNum = targetBlockCV?.type === ClarityType.UInt ? Number(targetBlockCV.value) : 3701042
+        const participantsNum = participantsCV?.type === ClarityType.UInt ? Number(participantsCV.value) : 0
+        const pausedBool = pausedCV?.type === ClarityType.BoolTrue
+        
+        console.log('Extracted values:', { statusNum, targetBlockNum, participantsNum, pausedBool })
         
         setStatus(getStatusText(statusNum))
         setTargetBlock(targetBlockNum)
@@ -118,7 +128,7 @@ export default function App() {
         setPaused(pausedBool)
         
         // Check if winner exists (optional type)
-        if (winnerCV.type === ClarityType.OptionalSome) {
+        if (winnerCV?.type === ClarityType.OptionalSome) {
           const winnerPrincipal = winnerCV.value
           if (winnerPrincipal.type === ClarityType.PrincipalStandard) {
             setWinner(winnerPrincipal.address)
