@@ -228,8 +228,11 @@ export default function App() {
       postConditionMode: 'allow',
       onFinish: (data) => {
         console.log('Transaction:', data.txId)
-        alert('Winner drawn! Transaction ID: ' + data.txId)
-        setTimeout(loadLotteryInfo, 3000)
+        alert('Winner drawn! Transaction ID: ' + data.txId + '\n\nWait 1-2 minutes for confirmation, then refresh the page.')
+        // Refresh after 5 seconds, 15 seconds, and 30 seconds
+        setTimeout(loadLotteryInfo, 5000)
+        setTimeout(loadLotteryInfo, 15000)
+        setTimeout(loadLotteryInfo, 30000)
       },
       onCancel: () => {
         console.log('Transaction cancelled')
@@ -377,6 +380,19 @@ export default function App() {
                     <div className="text-xs text-gray-400 mb-1">Participants</div>
                     <div className="text-lg sm:text-xl font-bold font-mono">{totalParticipants}</div>
                   </div>
+                </div>
+
+                {/* Refresh Button */}
+                <div className="mb-4">
+                  <Button 
+                    onClick={() => {
+                      loadLotteryInfo()
+                      loadCurrentBlock()
+                    }}
+                    className="w-full bg-gray-800 hover:bg-gray-700"
+                  >
+                    🔄 Refresh Data
+                  </Button>
                 </div>
 
                 {/* Action Buttons */}
