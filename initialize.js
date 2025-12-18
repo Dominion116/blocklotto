@@ -21,8 +21,8 @@ async function initializeLottery() {
   const privateKey = account.stxPrivateKey;
   const address = getStxAddress({ account, transactionVersion: 0x80 });
   
-  // Set target block to 50 blocks from now
-  const targetBlock = 200000; // Update this to current block height + 50
+  // Set target block to 50 blocks from now (current: 3700992)
+  const targetBlock = 3701042; // 3700992 + 50
   
   const txOptions = {
     contractAddress: 'ST30VGN68PSGVWGNMD0HH2WQMM5T486EK3WBNTHCY',
