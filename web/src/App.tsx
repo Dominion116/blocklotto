@@ -4,11 +4,11 @@ import { Card } from './components/card'
 import { userSession, connectWallet, disconnect } from './config'
 import { openContractCall } from '@stacks/connect'
 import { StacksTestnet } from '@stacks/network'
-
-// Helper functions for Clarity values
-const uintCV = (value: number | bigint) => ({ type: 'uint', value: BigInt(value) })
-const standardPrincipalCV = (address: string) => ({ type: 'principal', value: address })
-const PostConditionMode = { Allow: 1, Deny: 2 }
+import { 
+  PostConditionMode,
+  makeStandardSTXPostCondition,
+  FungibleConditionCode,
+} from '@stacks/transactions'
 
 async function callReadOnlyFunction(options: any) {
   try {
@@ -22,15 +22,18 @@ async function callReadOnlyFunction(options: any) {
     })
     
     if (!response.ok) {
+      const errorText = await response.text()
+      console.error('API Error:', errorText)
       throw new Error(`HTTP error! status: ${response.status}`)
     }
     
     const data = await response.json()
-    console.log('API Response:', data)
+    console.log('Raw API Response:', data)
     
-    // Parse the Clarity value response
+    // The API returns the value in a parsed format already
     if (data.okay && data.result) {
-      return parseReadOnlyResponse(data.result)
+      // Parse the Clarity value from the string representation
+      return parseClarityFromAPI(data)
     }
     throw new Error('Invalid response from contract')
   } catch (error) {
@@ -39,38 +42,11 @@ async function callReadOnlyFunction(options: any) {
   }
 }
 
-function parseReadOnlyResponse(clarityValue: string): any {
-  // Parse the hex-encoded Clarity value
-  // For now, return a simplified structure
-  try {
-    // The response is a tuple with lottery info
-    return {
-      status: 0,
-      targetBlockHeight: 3701042,
-      totalParticipants: 0,
-      prizePool: 0,
-      entryFee: 10000000,
-      minPlayers: 3,
-      maxParticipants: 100,
-      winner: null,
-      creator: 'ST30VGN68PSGVWGNMD0HH2WQMM5T486EK3WBNTHCY',
-      paused: false
-    }
-  } catch (error) {
-    console.error('Parse error:', error)
-    throw error
-  }
-}
-
-function cvToJSON(cv: any) {
-  if (!cv) return null
-  if (cv.type === 'uint') return { type: 'uint', value: cv.value.toString() }
-  if (cv.type === 'int') return { type: 'int', value: cv.value.toString() }
-  if (cv.type === 'bool') return { type: 'bool', value: cv.value }
-  if (cv.type === 'none') return { type: 'none' }
-  if (cv.type === 'some') return { type: 'some', value: cvToJSON(cv.value) }
-  if (cv.type === 'principal') return { type: 'principal', value: cv.value }
-  return cv
+function parseClarityFromAPI(apiResponse: any): any {
+  // The Stacks API returns Clarity values in a parsed format
+  // We can work with the response representation directly
+  console.log('Parsed Clarity Value:', apiResponse)
+  return apiResponse
 }
 
 const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || 'ST30VGN68PSGVWGNMD0HH2WQMM5T486EK3WBNTHCY'
@@ -108,13 +84,21 @@ export default function App() {
       
       console.log('Lottery info result:', result)
       
-      setStatus(getStatusText(result.status))
-      setTargetBlock(result.targetBlockHeight)
-      setTotalParticipants(result.totalParticipants)
-      setPaused(result.paused)
-      
-      if (result.winner) {
-        setWinner(result.winner)
+      // Result is (ok {tuple}) format
+      if (result.type === 'ok' && result.value) {
+        const lotteryData = result.value.value
+        
+        setStatus(getStatusText(lotteryData.status.value))
+        setTargetBlock(parseInt(lotteryData['target-block-height'].value))
+        setTotalParticipants(parseInt(lotteryData['total-participants'].value))
+        setPaused(lotteryData.paused.value)
+        
+        // Check if winner exists (optional type)
+        if (lotteryData.winner.type === 'some') {
+          setWinner(lotteryData.winner.value.value)
+        } else {
+          setWinner(null)
+        }
       }
     } catch (error) {
       console.error('Error loading lottery info:', error)
@@ -138,16 +122,30 @@ export default function App() {
       return
     }
 
+    // Create post condition: user will transfer 10 STX
+    const postConditions = [
+      makeStandardSTXPostCondition(
+        address,
+        FungibleConditionCode.Equal,
+        10000000n // 10 STX in microSTX
+      )
+    ]
+
     openContractCall({
       network,
       contractAddress: CONTRACT_ADDRESS,
       contractName: CONTRACT_NAME,
       functionName: 'enter-lottery',
       functionArgs: [],
-      postConditionMode: PostConditionMode.Allow,
+      postConditions,
+      postConditionMode: PostConditionMode.Deny,
       onFinish: (data) => {
         console.log('Transaction:', data.txId)
-        setTimeout(loadLotteryInfo, 2000)
+        alert('Entry submitted! Transaction ID: ' + data.txId)
+        setTimeout(loadLotteryInfo, 3000)
+      },
+      onCancel: () => {
+        console.log('Transaction cancelled')
       }
     })
   }
@@ -167,7 +165,11 @@ export default function App() {
       postConditionMode: PostConditionMode.Allow,
       onFinish: (data) => {
         console.log('Transaction:', data.txId)
-        setTimeout(loadLotteryInfo, 2000)
+        alert('Winner drawn! Transaction ID: ' + data.txId)
+        setTimeout(loadLotteryInfo, 3000)
+      },
+      onCancel: () => {
+        console.log('Transaction cancelled')
       }
     })
   }
@@ -187,7 +189,11 @@ export default function App() {
       postConditionMode: PostConditionMode.Allow,
       onFinish: (data) => {
         console.log('Transaction:', data.txId)
-        setTimeout(loadLotteryInfo, 2000)
+        alert('Prize claimed! Transaction ID: ' + data.txId)
+        setTimeout(loadLotteryInfo, 3000)
+      },
+      onCancel: () => {
+        console.log('Transaction cancelled')
       }
     })
   }
@@ -207,7 +213,11 @@ export default function App() {
       postConditionMode: PostConditionMode.Allow,
       onFinish: (data) => {
         console.log('Transaction:', data.txId)
-        setTimeout(loadLotteryInfo, 2000)
+        alert('Refund requested! Transaction ID: ' + data.txId)
+        setTimeout(loadLotteryInfo, 3000)
+      },
+      onCancel: () => {
+        console.log('Transaction cancelled')
       }
     })
   }
