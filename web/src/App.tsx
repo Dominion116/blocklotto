@@ -98,10 +98,10 @@ export default function App() {
         const tuple = result.value
         console.log('Tuple:', tuple)
         console.log('Tuple properties:', Object.keys(tuple))
-        console.log('Tuple data:', tuple.data)
+        console.log('Tuple value:', tuple.value)
         
-        // Access the tuple fields directly
-        const tupleData = tuple.data || tuple
+        // Access the tuple fields from tuple.value
+        const tupleData = tuple.value
         const statusCV = tupleData['status']
         const targetBlockCV = tupleData['target-block-height']
         const participantsCV = tupleData['total-participants']
