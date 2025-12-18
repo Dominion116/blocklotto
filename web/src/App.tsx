@@ -4,11 +4,7 @@ import { Card } from './components/card'
 import { userSession, connectWallet, disconnect } from './config'
 import { openContractCall } from '@stacks/connect'
 import { StacksTestnet } from '@stacks/network'
-import { 
-  PostConditionMode,
-  makeStandardSTXPostCondition,
-  FungibleConditionCode,
-} from '@stacks/transactions'
+import * as Pc from '@stacks/transactions/dist/pc'
 
 async function callReadOnlyFunction(options: any) {
   try {
@@ -124,11 +120,7 @@ export default function App() {
 
     // Create post condition: user will transfer 10 STX
     const postConditions = [
-      makeStandardSTXPostCondition(
-        address,
-        FungibleConditionCode.Equal,
-        10000000n // 10 STX in microSTX
-      )
+      Pc.principal(address).willSendEq(10_000_000).ustx()
     ]
 
     openContractCall({
@@ -138,7 +130,7 @@ export default function App() {
       functionName: 'enter-lottery',
       functionArgs: [],
       postConditions,
-      postConditionMode: PostConditionMode.Deny,
+      postConditionMode: 'deny',
       onFinish: (data) => {
         console.log('Transaction:', data.txId)
         alert('Entry submitted! Transaction ID: ' + data.txId)
@@ -162,7 +154,7 @@ export default function App() {
       contractName: CONTRACT_NAME,
       functionName: 'draw-winner',
       functionArgs: [],
-      postConditionMode: PostConditionMode.Allow,
+      postConditionMode: 'allow',
       onFinish: (data) => {
         console.log('Transaction:', data.txId)
         alert('Winner drawn! Transaction ID: ' + data.txId)
@@ -186,7 +178,7 @@ export default function App() {
       contractName: CONTRACT_NAME,
       functionName: 'claim-prize',
       functionArgs: [],
-      postConditionMode: PostConditionMode.Allow,
+      postConditionMode: 'allow',
       onFinish: (data) => {
         console.log('Transaction:', data.txId)
         alert('Prize claimed! Transaction ID: ' + data.txId)
@@ -210,7 +202,7 @@ export default function App() {
       contractName: CONTRACT_NAME,
       functionName: 'refund',
       functionArgs: [],
-      postConditionMode: PostConditionMode.Allow,
+      postConditionMode: 'allow',
       onFinish: (data) => {
         console.log('Transaction:', data.txId)
         alert('Refund requested! Transaction ID: ' + data.txId)
@@ -234,7 +226,7 @@ export default function App() {
       contractName: CONTRACT_NAME,
       functionName: 'pause',
       functionArgs: [],
-      postConditionMode: PostConditionMode.Allow,
+      postConditionMode: 'allow',
       onFinish: (data) => {
         console.log('Transaction:', data.txId)
         setTimeout(loadLotteryInfo, 2000)
@@ -254,7 +246,7 @@ export default function App() {
       contractName: CONTRACT_NAME,
       functionName: 'unpause',
       functionArgs: [],
-      postConditionMode: PostConditionMode.Allow,
+      postConditionMode: 'allow',
       onFinish: (data) => {
         console.log('Transaction:', data.txId)
         setTimeout(loadLotteryInfo, 2000)
