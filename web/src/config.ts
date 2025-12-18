@@ -1,29 +1,24 @@
-import { createAppKit } from '@reown/appkit/react'
-import { BitcoinAdapter } from '@reown/appkit-adapter-bitcoin'
+import { AppConfig, UserSession, showConnect } from '@stacks/connect'
 
-// 1. Get projectId from https://cloud.reown.com
-const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || 'YOUR_PROJECT_ID'
+const appConfig = new AppConfig(['store_write', 'publish_data'])
+export const userSession = new UserSession({ appConfig })
 
-// 2. Create Bitcoin adapter
-const bitcoinAdapter = new BitcoinAdapter({
-  networks: ['testnet']
-})
-
-// 3. Create modal
-const metadata = {
+export const appDetails = {
   name: 'BlockLotto',
-  description: 'Decentralized lottery on Stacks blockchain',
-  url: 'https://blocklotto.app',
-  icons: ['https://avatars.githubusercontent.com/u/37784886']
+  icon: 'https://avatars.githubusercontent.com/u/37784886'
 }
 
-createAppKit({
-  adapters: [bitcoinAdapter],
-  metadata,
-  projectId,
-  features: {
-    analytics: false
-  }
-})
+export const connectWallet = () => {
+  showConnect({
+    appDetails,
+    onFinish: () => {
+      window.location.reload()
+    },
+    userSession
+  })
+}
 
-export { bitcoinAdapter }
+export const disconnect = () => {
+  userSession.signUserOut()
+  window.location.reload()
+}

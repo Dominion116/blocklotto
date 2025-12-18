@@ -1,43 +1,196 @@
-import React, { useState } from 'react'
-import { useAppKitAccount, useAppKitProvider } from '@reown/appkit/react'
+import React, { useState, useEffect } from 'react'
 import { Button } from './components/button'
 import { Card } from './components/card'
-import './config'
+import { userSession, connectWallet, disconnect } from './config'
+import { 
+  openContractCall,
+  openContractDeploy,
+} from '@stacks/connect'
+import { StacksTestnet } from '@stacks/network'
+import {
+  uintCV,
+  callReadOnlyFunction,
+  cvToJSON,
+  standardPrincipalCV,
+  PostConditionMode,
+} from '@stacks/transactions'
 
 const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || 'ST30VGN68PSGVWGNMD0HH2WQMM5T486EK3WBNTHCY'
 const CONTRACT_NAME = import.meta.env.VITE_CONTRACT_NAME || 'block-lotto'
+const network = new StacksTestnet()
 
 export default function App() {
-  const { address, isConnected } = useAppKitAccount()
-  const [status] = useState<string>('Ready - Connect wallet to interact')
-  const [targetBlock] = useState<number>(0)
-  const [participants] = useState<string[]>([])
-  const [totalParticipants] = useState<number>(0)
-  const [winner] = useState<string | null>(null)
-  const [paused] = useState<boolean>(false)
+  const [isConnected, setIsConnected] = useState(false)
+  const [address, setAddress] = useState<string>('')
+  const [status, setStatus] = useState<string>('Loading...')
+  const [targetBlock, setTargetBlock] = useState<number>(0)
+  const [totalParticipants, setTotalParticipants] = useState<number>(0)
+  const [winner, setWinner] = useState<string | null>(null)
+  const [paused, setPaused] = useState<boolean>(false)
+
+  useEffect(() => {
+    if (userSession.isUserSignedIn()) {
+      setIsConnected(true)
+      const userData = userSession.loadUserData()
+      setAddress(userData.profile.stxAddress.testnet)
+      loadLotteryInfo()
+    }
+  }, [])
+
+  const loadLotteryInfo = async () => {
+    try {
+      const result = await callReadOnlyFunction({
+        network,
+        contractAddress: CONTRACT_ADDRESS,
+        contractName: CONTRACT_NAME,
+        functionName: 'get-lottery-info',
+        functionArgs: [],
+        senderAddress: CONTRACT_ADDRESS,
+      })
+      
+      const data = cvToJSON(result).value.value
+      setStatus(getStatusText(data.status.value))
+      setTargetBlock(parseInt(data['target-block-height'].value))
+      setTotalParticipants(parseInt(data['total-participants'].value))
+      setPaused(data.paused.value)
+      
+      if (data.winner.value) {
+        setWinner(data.winner.value.value)
+      }
+    } catch (error) {
+      console.error('Error loading lottery info:', error)
+      setStatus('Error loading lottery info')
+    }
+  }
+
+  const getStatusText = (statusCode: string) => {
+    const codes: Record<string, string> = {
+      '0': 'Open',
+      '1': 'Ready to Draw',
+      '2': 'Completed',
+      '3': 'Refunded'
+    }
+    return codes[statusCode] || 'Unknown'
+  }
 
   const handleEnter = () => {
-    alert('Connect Hiro Wallet to enter the lottery')
+    if (!isConnected) {
+      connectWallet()
+      return
+    }
+
+    openContractCall({
+      network,
+      contractAddress: CONTRACT_ADDRESS,
+      contractName: CONTRACT_NAME,
+      functionName: 'enter-lottery',
+      functionArgs: [],
+      postConditionMode: PostConditionMode.Allow,
+      onFinish: (data) => {
+        console.log('Transaction:', data.txId)
+        setTimeout(loadLotteryInfo, 2000)
+      }
+    })
   }
 
   const handleDraw = () => {
-    alert('Connect Hiro Wallet to draw winner')
+    if (!isConnected) {
+      connectWallet()
+      return
+    }
+
+    openContractCall({
+      network,
+      contractAddress: CONTRACT_ADDRESS,
+      contractName: CONTRACT_NAME,
+      functionName: 'draw-winner',
+      functionArgs: [],
+      postConditionMode: PostConditionMode.Allow,
+      onFinish: (data) => {
+        console.log('Transaction:', data.txId)
+        setTimeout(loadLotteryInfo, 2000)
+      }
+    })
   }
 
   const handleClaim = () => {
-    alert('Connect Hiro Wallet to claim prize')
+    if (!isConnected) {
+      connectWallet()
+      return
+    }
+
+    openContractCall({
+      network,
+      contractAddress: CONTRACT_ADDRESS,
+      contractName: CONTRACT_NAME,
+      functionName: 'claim-prize',
+      functionArgs: [],
+      postConditionMode: PostConditionMode.Allow,
+      onFinish: (data) => {
+        console.log('Transaction:', data.txId)
+        setTimeout(loadLotteryInfo, 2000)
+      }
+    })
   }
 
   const handleRefund = () => {
-    alert('Connect Hiro Wallet to request refund')
+    if (!isConnected) {
+      connectWallet()
+      return
+    }
+
+    openContractCall({
+      network,
+      contractAddress: CONTRACT_ADDRESS,
+      contractName: CONTRACT_NAME,
+      functionName: 'refund',
+      functionArgs: [],
+      postConditionMode: PostConditionMode.Allow,
+      onFinish: (data) => {
+        console.log('Transaction:', data.txId)
+        setTimeout(loadLotteryInfo, 2000)
+      }
+    })
   }
 
   const handlePause = () => {
-    alert('Connect Hiro Wallet (admin only)')
+    if (!isConnected) {
+      connectWallet()
+      return
+    }
+
+    openContractCall({
+      network,
+      contractAddress: CONTRACT_ADDRESS,
+      contractName: CONTRACT_NAME,
+      functionName: 'pause',
+      functionArgs: [],
+      postConditionMode: PostConditionMode.Allow,
+      onFinish: (data) => {
+        console.log('Transaction:', data.txId)
+        setTimeout(loadLotteryInfo, 2000)
+      }
+    })
   }
 
   const handleUnpause = () => {
-    alert('Connect Hiro Wallet (admin only)')
+    if (!isConnected) {
+      connectWallet()
+      return
+    }
+
+    openContractCall({
+      network,
+      contractAddress: CONTRACT_ADDRESS,
+      contractName: CONTRACT_NAME,
+      functionName: 'unpause',
+      functionArgs: [],
+      postConditionMode: PostConditionMode.Allow,
+      onFinish: (data) => {
+        console.log('Transaction:', data.txId)
+        setTimeout(loadLotteryInfo, 2000)
+      }
+    })
   }
 
   return (
@@ -47,7 +200,14 @@ export default function App() {
           <h1 className="text-3xl md:text-4xl font-bold">BlockLotto</h1>
           <p className="text-sm md:text-base text-gray-400">Decentralized lottery on Stacks</p>
         </div>
-        <appkit-button />
+        {isConnected ? (
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-gray-400">{address.slice(0, 6)}...{address.slice(-4)}</span>
+            <Button onClick={disconnect}>Disconnect</Button>
+          </div>
+        ) : (
+          <Button onClick={connectWallet}>Connect Wallet</Button>
+        )}
       </header>
 
       <main className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
@@ -72,10 +232,7 @@ export default function App() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Card title="Participants">
               <ul className="text-xs md:text-sm text-gray-300 max-h-48 overflow-y-auto">
-                {participants.length === 0 && <li className="text-gray-500">No participants listed</li>}
-                {participants.map((p, i) => (
-                  <li key={i} className="truncate">{p}</li>
-                ))}
+                <li className="text-gray-500">Total: {totalParticipants}</li>
               </ul>
             </Card>
 
