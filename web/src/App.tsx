@@ -94,9 +94,15 @@ export default function App() {
         const tuple = result.value
         const data = cvToValue(tuple)
         
-        setStatus(getStatusText(Number(data['status'])))
-        setTargetBlock(Number(data['target-block-height']))
-        setTotalParticipants(Number(data['total-participants']))
+        console.log('Converted data:', data)
+        
+        const statusNum = Number(data['status'])
+        const targetBlockNum = Number(data['target-block-height'])
+        const participantsNum = Number(data['total-participants'])
+        
+        setStatus(getStatusText(!isNaN(statusNum) ? statusNum : 0))
+        setTargetBlock(!isNaN(targetBlockNum) ? targetBlockNum : 3701042)
+        setTotalParticipants(!isNaN(participantsNum) ? participantsNum : 0)
         setPaused(data['paused'] === true)
         
         // Check if winner exists (optional type)
