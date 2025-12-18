@@ -1,14 +1,11 @@
 import { makeContractDeploy, broadcastTransaction, AnchorMode } from '@stacks/transactions';
-import stacksNetwork from '@stacks/network';
+import { STACKS_TESTNET } from '@stacks/network';
+import walletSdkPkg from '@stacks/wallet-sdk';
+const { generateWallet, getStxAddress } = walletSdkPkg;
 import fs from 'fs';
 import dotenv from 'dotenv';
-import * as bip39 from '@scure/bip39';
-
-const { StacksTestnet } = stacksNetwork;
 
 dotenv.config();
-
-const network = new StacksTestnet();
 
 async function deployContract() {
   const contractName = 'block-lotto';
@@ -20,31 +17,40 @@ async function deployContract() {
     throw new Error('STACKS_TESTNET_MNEMONIC not found in .env');
   }
   
-  const seed = await bip39.mnemonicToSeed(mnemonic);
-  const privateKey = seed.toString('hex').slice(0, 64);
+  // Generate wallet from mnemonic
+  const wallet = await generateWallet({
+    secretKey: mnemonic,
+    password: ''
+  });
+  
+  const account = wallet.accounts[0];
+  const privateKey = account.stxPrivateKey;
+  const address = getStxAddress({ account, transactionVersion: 0x80 }); // Testnet = 0x80
   
   const txOptions = {
     contractName: contractName,
     codeBody: codeBody,
     senderKey: privateKey,
-    network: network,
+    network: STACKS_TESTNET,
     anchorMode: AnchorMode.Any,
-    fee: 500000n,
+    clarityVersion: 2,
   };
 
   try {
     console.log('Deploying contract to testnet...');
+    console.log('From address:', address);
     const transaction = await makeContractDeploy(txOptions);
-    const broadcastResponse = await broadcastTransaction(transaction, network);
+    const broadcastResponse = await broadcastTransaction({transaction, network: STACKS_TESTNET});
     
     console.log('✅ Contract deployed successfully!');
     console.log('Transaction ID:', broadcastResponse.txid);
     console.log('View in explorer:', `https://explorer.hiro.so/txid/${broadcastResponse.txid}?chain=testnet`);
-    console.log('\nContract address will be: ST30VGN68PSGVWGNMD0HH2WQMM5T486EK3WBNTHCY.block-lotto');
+    console.log(`\nContract address: ${address}.block-lotto`);
   } catch (error) {
     console.error('❌ Deployment failed:', error);
     if (error.response) {
-      console.error('Response:', await error.response.text());
+      const text = await error.response.text();
+      console.error('Response:', text);
     }
   }
 }

@@ -14,5 +14,5 @@ plan:
             cost: 76670
             path: contracts/block-lotto.clar
             anchor-block-only: true
-            clarity-version: 1
+            clarity-version: 2
       epoch: "2.05"
