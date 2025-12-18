@@ -2,18 +2,37 @@ import React, { useState, useEffect } from 'react'
 import { Button } from './components/button'
 import { Card } from './components/card'
 import { userSession, connectWallet, disconnect } from './config'
-import { 
-  openContractCall,
-  openContractDeploy,
-} from '@stacks/connect'
+import { openContractCall } from '@stacks/connect'
 import { StacksTestnet } from '@stacks/network'
-import {
-  uintCV,
-  callReadOnlyFunction,
-  cvToJSON,
-  standardPrincipalCV,
-  PostConditionMode,
-} from '@stacks/transactions'
+
+// Helper functions for Clarity values
+const uintCV = (value: number | bigint) => ({ type: 'uint', value: BigInt(value) })
+const standardPrincipalCV = (address: string) => ({ type: 'principal', value: address })
+const PostConditionMode = { Allow: 1, Deny: 2 }
+
+async function callReadOnlyFunction(options: any) {
+  const response = await fetch(`${options.network.coreApiUrl}/v2/contracts/call-read/${options.contractAddress}/${options.contractName}/${options.functionName}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      sender: options.senderAddress || options.contractAddress,
+      arguments: options.functionArgs?.map((arg: any) => arg.hex) || []
+    })
+  })
+  const data = await response.json()
+  return { value: data.result }
+}
+
+function cvToJSON(cv: any) {
+  if (!cv) return null
+  if (cv.type === 'uint') return { type: 'uint', value: cv.value.toString() }
+  if (cv.type === 'int') return { type: 'int', value: cv.value.toString() }
+  if (cv.type === 'bool') return { type: 'bool', value: cv.value }
+  if (cv.type === 'none') return { type: 'none' }
+  if (cv.type === 'some') return { type: 'some', value: cvToJSON(cv.value) }
+  if (cv.type === 'principal') return { type: 'principal', value: cv.value }
+  return cv
+}
 
 const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || 'ST30VGN68PSGVWGNMD0HH2WQMM5T486EK3WBNTHCY'
 const CONTRACT_NAME = import.meta.env.VITE_CONTRACT_NAME || 'block-lotto'
@@ -200,7 +219,7 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
                 BlockLotto
               </h1>
               <p className="text-xs sm:text-sm text-gray-400 mt-1">Decentralized lottery on Stacks</p>
@@ -231,7 +250,7 @@ export default function App() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-800">
                     <div className="text-xs text-gray-400 mb-1">Status</div>
-                    <div className="text-lg sm:text-xl font-bold font-mono text-green-400">{status}</div>
+                    <div className="text-lg sm:text-xl font-bold font-mono">{status}</div>
                   </div>
                   <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-800">
                     <div className="text-xs text-gray-400 mb-1">Target Block</div>
@@ -239,12 +258,12 @@ export default function App() {
                   </div>
                   <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-800">
                     <div className="text-xs text-gray-400 mb-1">Participants</div>
-                    <div className="text-lg sm:text-xl font-bold font-mono text-blue-400">{totalParticipants}</div>
+                    <div className="text-lg sm:text-xl font-bold font-mono">{totalParticipants}</div>
                   </div>
                   <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-800">
                     <div className="text-xs text-gray-400 mb-1">Paused</div>
                     <div className="text-lg sm:text-xl font-bold font-mono">
-                      {paused ? <span className="text-red-400">Yes</span> : <span className="text-green-400">No</span>}
+                      {paused ? <span className="text-gray-400">Yes</span> : <span className="text-gray-400">No</span>}
                     </div>
                   </div>
                 </div>
@@ -252,16 +271,16 @@ export default function App() {
                 {/* Action Buttons */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <Button onClick={handleEnter} className="w-full py-3 text-sm sm:text-base">
-                    🎰 Enter Lottery (10 STX)
+                    Enter Lottery (10 STX)
                   </Button>
                   <Button onClick={handleDraw} className="w-full py-3 text-sm sm:text-base">
-                    🎲 Draw Winner
+                    Draw Winner
                   </Button>
                   <Button onClick={handleClaim} className="w-full py-3 text-sm sm:text-base">
-                    💰 Claim Prize
+                    Claim Prize
                   </Button>
                   <Button onClick={handleRefund} className="w-full py-3 text-sm sm:text-base">
-                    💸 Request Refund
+                    Request Refund
                   </Button>
                 </div>
               </div>
@@ -273,7 +292,7 @@ export default function App() {
                 <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-800">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-400">Total Entries</span>
-                    <span className="text-2xl font-bold text-blue-400">{totalParticipants}</span>
+                    <span className="text-2xl font-bold">{totalParticipants}</span>
                   </div>
                   <div className="mt-4 pt-4 border-t border-gray-800">
                     <span className="text-xs text-gray-500">Prize Pool: {totalParticipants * 10} STX</span>
@@ -286,11 +305,10 @@ export default function App() {
                   {winner ? (
                     <div>
                       <div className="text-xs text-gray-400 mb-2">Winner Address</div>
-                      <div className="font-mono text-sm break-all text-green-400">{winner}</div>
+                      <div className="font-mono text-sm break-all">{winner}</div>
                     </div>
                   ) : (
                     <div className="text-center py-4">
-                      <div className="text-4xl mb-2">🏆</div>
                       <div className="text-sm text-gray-500">No winner yet</div>
                     </div>
                   )}
@@ -304,11 +322,11 @@ export default function App() {
             {/* Admin Controls */}
             <Card title="Admin Controls">
               <div className="flex flex-col gap-3">
-                <Button onClick={handlePause} className="w-full py-3 bg-red-600 hover:bg-red-700">
-                  ⏸️ Pause Lottery
+                <Button onClick={handlePause} className="w-full py-3">
+                  Pause Lottery
                 </Button>
-                <Button onClick={handleUnpause} className="w-full py-3 bg-green-600 hover:bg-green-700">
-                  ▶️ Unpause Lottery
+                <Button onClick={handleUnpause} className="w-full py-3">
+                  Unpause Lottery
                 </Button>
               </div>
             </Card>
@@ -317,19 +335,19 @@ export default function App() {
             <Card title="How It Works" className="hidden lg:block">
               <div className="space-y-3 text-sm text-gray-400">
                 <div className="flex items-start gap-2">
-                  <span className="text-purple-400 font-bold">1.</span>
+                  <span className="font-bold">1.</span>
                   <span>Connect your Stacks wallet</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <span className="text-purple-400 font-bold">2.</span>
+                  <span className="font-bold">2.</span>
                   <span>Enter the lottery with 10 STX</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <span className="text-purple-400 font-bold">3.</span>
+                  <span className="font-bold">3.</span>
                   <span>Wait for target block</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <span className="text-purple-400 font-bold">4.</span>
+                  <span className="font-bold">4.</span>
                   <span>Winner takes all!</span>
                 </div>
               </div>
@@ -340,11 +358,11 @@ export default function App() {
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <div className="bg-gray-900/50 p-3 rounded border border-gray-800 text-center">
                   <div className="text-xs text-gray-400">Entry Fee</div>
-                  <div className="text-lg font-bold text-purple-400">10 STX</div>
+                  <div className="text-lg font-bold">10 STX</div>
                 </div>
                 <div className="bg-gray-900/50 p-3 rounded border border-gray-800 text-center">
                   <div className="text-xs text-gray-400">Min Players</div>
-                  <div className="text-lg font-bold text-purple-400">3</div>
+                  <div className="text-lg font-bold">3</div>
                 </div>
               </div>
             </Card>
@@ -360,7 +378,7 @@ export default function App() {
               Contract: {CONTRACT_ADDRESS}.{CONTRACT_NAME}
             </div>
             <div className="text-gray-600">
-              Built with ❤️ on Stacks
+              Built on Stacks
             </div>
           </div>
         </div>
