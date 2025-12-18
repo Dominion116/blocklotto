@@ -66,6 +66,7 @@ export default function App() {
   const [totalParticipants, setTotalParticipants] = useState<number>(0)
   const [winner, setWinner] = useState<string | null>(null)
   const [paused, setPaused] = useState<boolean>(false)
+  const [currentBlock, setCurrentBlock] = useState<number>(0)
 
   useEffect(() => {
     if (userSession.isUserSignedIn()) {
@@ -74,7 +75,22 @@ export default function App() {
       setAddress(userData.profile.stxAddress.testnet)
     }
     loadLotteryInfo()
+    loadCurrentBlock()
+    
+    // Refresh block height every 30 seconds
+    const blockInterval = setInterval(loadCurrentBlock, 30000)
+    return () => clearInterval(blockInterval)
   }, [])
+
+  const loadCurrentBlock = async () => {
+    try {
+      const response = await fetch(`${network.coreApiUrl}/v2/info`)
+      const data = await response.json()
+      setCurrentBlock(data.stacks_tip_height)
+    } catch (error) {
+      console.error('Error loading current block:', error)
+    }
+  }
 
   const loadLotteryInfo = async () => {
     try {
@@ -336,18 +352,16 @@ export default function App() {
                     <div className="text-lg sm:text-xl font-bold font-mono">{status}</div>
                   </div>
                   <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-800">
+                    <div className="text-xs text-gray-400 mb-1">Current Block</div>
+                    <div className="text-lg sm:text-xl font-bold font-mono text-blue-400">{currentBlock.toLocaleString()}</div>
+                  </div>
+                  <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-800">
                     <div className="text-xs text-gray-400 mb-1">Target Block</div>
                     <div className="text-lg sm:text-xl font-bold font-mono">{targetBlock.toLocaleString()}</div>
                   </div>
                   <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-800">
                     <div className="text-xs text-gray-400 mb-1">Participants</div>
                     <div className="text-lg sm:text-xl font-bold font-mono">{totalParticipants}</div>
-                  </div>
-                  <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-800">
-                    <div className="text-xs text-gray-400 mb-1">Paused</div>
-                    <div className="text-lg sm:text-xl font-bold font-mono">
-                      {paused ? <span className="text-gray-400">Yes</span> : <span className="text-gray-400">No</span>}
-                    </div>
                   </div>
                 </div>
 
