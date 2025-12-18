@@ -8,6 +8,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@reown/appkit": "^1.6.0",
+    "@reown/appkit-adapter-bitcoin": "^1.6.0",
     "@stacks/connect": "^2.12.10",
     "@stacks/network": "^3.5.1",
     "@stacks/transactions": "^7.3.0",

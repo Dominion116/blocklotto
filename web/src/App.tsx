@@ -1,11 +1,14 @@
 import React, { useState } from 'react'
+import { useAppKitAccount, useAppKitProvider } from '@reown/appkit/react'
 import { Button } from './components/button'
 import { Card } from './components/card'
+import './config'
 
-const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM'
+const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || 'ST30VGN68PSGVWGNMD0HH2WQMM5T486EK3WBNTHCY'
 const CONTRACT_NAME = import.meta.env.VITE_CONTRACT_NAME || 'block-lotto'
 
 export default function App() {
+  const { address, isConnected } = useAppKitAccount()
   const [status] = useState<string>('Ready - Connect wallet to interact')
   const [targetBlock] = useState<number>(0)
   const [participants] = useState<string[]>([])
@@ -39,9 +42,12 @@ export default function App() {
 
   return (
     <div className="min-h-screen p-4 md:p-8 font-sans" style={{ background: '#000' }}>
-      <header className="mb-6 md:mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold">BlockLotto</h1>
-        <p className="text-sm md:text-base text-gray-400">Decentralized lottery on Stacks</p>
+      <header className="mb-6 md:mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-3xl md:text-4xl font-bold">BlockLotto</h1>
+          <p className="text-sm md:text-base text-gray-400">Decentralized lottery on Stacks</p>
+        </div>
+        <appkit-button />
       </header>
 
       <main className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
