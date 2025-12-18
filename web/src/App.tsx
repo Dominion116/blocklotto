@@ -11,7 +11,8 @@ import { ClarityType } from '@stacks/transactions/dist/clarity/constants'
 
 async function callReadOnlyFunction(options: any) {
   try {
-    const response = await fetch(`${options.network.coreApiUrl}/v2/contracts/call-read/${options.contractAddress}/${options.contractName}/${options.functionName}`, {
+    const apiUrl = (options.network as any).coreApiUrl || 'https://api.testnet.hiro.so'
+    const response = await fetch(`${apiUrl}/v2/contracts/call-read/${options.contractAddress}/${options.contractName}/${options.functionName}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -84,7 +85,8 @@ export default function App() {
 
   const loadCurrentBlock = async () => {
     try {
-      const response = await fetch(`${network.coreApiUrl}/v2/info`)
+      const apiUrl = (network as any).coreApiUrl || 'https://api.testnet.hiro.so'
+      const response = await fetch(`${apiUrl}/v2/info`)
       const data = await response.json()
       setCurrentBlock(data.stacks_tip_height)
     } catch (error) {
@@ -144,12 +146,24 @@ export default function App() {
         setPaused(pausedBool)
         
         // Check if winner exists (optional type)
+        console.log('Winner CV full object:', JSON.stringify(winnerCV, null, 2))
+        console.log('Winner CV type:', winnerCV?.type)
+        
         if (winnerCV?.type === ClarityType.OptionalSome) {
+          console.log('Winner has value!')
           const winnerPrincipal = winnerCV.value
-          if (winnerPrincipal.type === ClarityType.PrincipalStandard) {
-            setWinner(winnerPrincipal.address)
-          }
+          console.log('Winner principal:', winnerPrincipal)
+          console.log('Winner principal type:', winnerPrincipal?.type)
+          
+          // Try different ways to extract the address
+          const winnerAddress = winnerPrincipal?.address || 
+                               winnerPrincipal?.value?.address ||
+                               (typeof winnerPrincipal === 'string' ? winnerPrincipal : null)
+          
+          console.log('Extracted winner address:', winnerAddress)
+          setWinner(winnerAddress)
         } else {
+          console.log('No winner yet (optional none)')
           setWinner(null)
         }
       }
