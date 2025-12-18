@@ -5,6 +5,9 @@ import { userSession, connectWallet, disconnect } from './config'
 import { openContractCall } from '@stacks/connect'
 import { StacksTestnet } from '@stacks/network'
 import * as Pc from '@stacks/transactions/dist/pc'
+import { deserializeCV } from '@stacks/transactions/dist/clarity/deserialize'
+import { cvToValue } from '@stacks/transactions/dist/clarity/clarityValue'
+import { ClarityType } from '@stacks/transactions/dist/clarity/constants'
 
 async function callReadOnlyFunction(options: any) {
   try {
@@ -39,10 +42,16 @@ async function callReadOnlyFunction(options: any) {
 }
 
 function parseClarityFromAPI(apiResponse: any): any {
-  // The Stacks API returns Clarity values in a parsed format
-  // We can work with the response representation directly
-  console.log('Parsed Clarity Value:', apiResponse)
-  return apiResponse
+  // The Stacks API returns hex-encoded Clarity values
+  // Use deserializeCV to convert hex to Clarity value
+  try {
+    const clarityValue = deserializeCV(apiResponse.result)
+    console.log('Deserialized Clarity Value:', clarityValue)
+    return clarityValue
+  } catch (error) {
+    console.error('Failed to deserialize Clarity value:', error)
+    return apiResponse
+  }
 }
 
 const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || 'ST30VGN68PSGVWGNMD0HH2WQMM5T486EK3WBNTHCY'
@@ -80,18 +89,20 @@ export default function App() {
       
       console.log('Lottery info result:', result)
       
-      // Result is (ok {tuple}) format
-      if (result.type === 'ok' && result.value) {
-        const lotteryData = result.value.value
+      // Result is a ResponseOk Clarity value
+      if (result.type === ClarityType.ResponseOk) {
+        const tuple = result.value
+        const data = cvToValue(tuple)
         
-        setStatus(getStatusText(lotteryData.status.value))
-        setTargetBlock(parseInt(lotteryData['target-block-height'].value))
-        setTotalParticipants(parseInt(lotteryData['total-participants'].value))
-        setPaused(lotteryData.paused.value)
+        setStatus(getStatusText(Number(data['status'])))
+        setTargetBlock(Number(data['target-block-height']))
+        setTotalParticipants(Number(data['total-participants']))
+        setPaused(data['paused'] === true)
         
         // Check if winner exists (optional type)
-        if (lotteryData.winner.type === 'some') {
-          setWinner(lotteryData.winner.value.value)
+        const winnerValue = data['winner']
+        if (winnerValue !== null) {
+          setWinner(winnerValue)
         } else {
           setWinner(null)
         }
@@ -102,12 +113,12 @@ export default function App() {
     }
   }
 
-  const getStatusText = (statusCode: string) => {
-    const codes: Record<string, string> = {
-      '0': 'Open',
-      '1': 'Ready to Draw',
-      '2': 'Completed',
-      '3': 'Refunded'
+  const getStatusText = (statusCode: number) => {
+    const codes: Record<number, string> = {
+      0: 'Open',
+      1: 'Ready to Draw',
+      2: 'Completed',
+      3: 'Refunded'
     }
     return codes[statusCode] || 'Unknown'
   }
