@@ -21,8 +21,11 @@ async function initializeLottery() {
   const privateKey = account.stxPrivateKey;
   const address = getStxAddress({ account, transactionVersion: 0x80 });
   
-  // Set target block to 50 blocks from now (current: 3700992)
-  const targetBlock = 3701042; // 3700992 + 50
+  // Get current block height and set target to current + 10 blocks
+  const response = await fetch('https://api.testnet.hiro.so/v2/info');
+  const info = await response.json();
+  const currentBlock = info.stacks_tip_height;
+  const targetBlock = currentBlock + 10; // 10 blocks from now (~10 minutes)
   
   const txOptions = {
     contractAddress: 'ST30VGN68PSGVWGNMD0HH2WQMM5T486EK3WBNTHCY',
