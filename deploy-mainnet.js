@@ -1,5 +1,5 @@
 import { makeContractDeploy, broadcastTransaction, AnchorMode } from '@stacks/transactions';
-import { StacksMainnet } from '@stacks/network';
+import { STACKS_MAINNET } from '@stacks/network';
 import walletSdkPkg from '@stacks/wallet-sdk';
 const { generateWallet, getStxAddress } = walletSdkPkg;
 import dotenv from 'dotenv';
@@ -20,7 +20,7 @@ async function deployToMainnet() {
   
   const account = wallet.accounts[0];
   const privateKey = account.stxPrivateKey;
-  const address = getStxAddress({ account, transactionVersion: 0x16 }); // 0x16 for mainnet
+  const address = getStxAddress({ account, transactionVersion: 0x80 }); // Use testnet address format
   
   const contractSource = readFileSync('./contracts/block-lotto.clar', 'utf-8');
   
@@ -28,7 +28,7 @@ async function deployToMainnet() {
     contractName: 'block-lotto',
     codeBody: contractSource,
     senderKey: privateKey,
-    network: new StacksMainnet(),
+    network: STACKS_MAINNET,
     anchorMode: AnchorMode.Any,
     clarityVersion: 2,
   };
@@ -43,7 +43,7 @@ async function deployToMainnet() {
     await new Promise(resolve => setTimeout(resolve, 5000));
     
     const transaction = await makeContractDeploy(txOptions);
-    const broadcastResponse = await broadcastTransaction({transaction, network: new StacksMainnet()});
+    const broadcastResponse = await broadcastTransaction({transaction, network: STACKS_MAINNET});
     
     console.log('\n✅ Contract deployed successfully to MAINNET!');
     console.log('Transaction ID:', broadcastResponse.txid);
