@@ -1,5 +1,5 @@
 import { makeContractCall, broadcastTransaction, AnchorMode, uintCV } from '@stacks/transactions';
-import { StacksMainnet } from '@stacks/network';
+import { STACKS_MAINNET } from '@stacks/network';
 import walletSdkPkg from '@stacks/wallet-sdk';
 const { generateWallet, getStxAddress } = walletSdkPkg;
 import dotenv from 'dotenv';
@@ -19,7 +19,7 @@ async function initializeLotteryMainnet() {
   
   const account = wallet.accounts[0];
   const privateKey = account.stxPrivateKey;
-  const address = getStxAddress({ account, transactionVersion: 0x16 }); // 0x16 for mainnet
+  const address = getStxAddress({ account, transactionVersion: 0x80 }); // Use same format as deploy
   
   // Get current block height and set target to current + 100 blocks (~100 minutes)
   const response = await fetch('https://api.hiro.so/v2/info');
@@ -33,7 +33,7 @@ async function initializeLotteryMainnet() {
     functionName: 'init',
     functionArgs: [uintCV(targetBlock)],
     senderKey: privateKey,
-    network: new StacksMainnet(),
+    network: STACKS_MAINNET,
     anchorMode: AnchorMode.Any,
   };
 
@@ -48,7 +48,7 @@ async function initializeLotteryMainnet() {
     await new Promise(resolve => setTimeout(resolve, 5000));
     
     const transaction = await makeContractCall(txOptions);
-    const broadcastResponse = await broadcastTransaction({transaction, network: new StacksMainnet()});
+    const broadcastResponse = await broadcastTransaction({transaction, network: STACKS_MAINNET});
     
     console.log('\n✅ Lottery initialized on MAINNET!');
     console.log('Transaction ID:', broadcastResponse.txid);
