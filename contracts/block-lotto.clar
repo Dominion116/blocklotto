@@ -22,8 +22,8 @@
 (define-constant ERR-PAUSED u114)
 
 ;; Operational parameters
-(define-constant entry-fee u10000000) ;; 10 STX
-(define-constant min-players u3)
+(define-constant entry-fee u1000000) ;; 1 STX
+(define-constant min-players u2)
 (define-constant max-participants u100)
 
 ;; Lottery statuses
