@@ -189,9 +189,9 @@ export default function App() {
       return
     }
 
-    // Create post condition: user will transfer 10 STX
+    // Create post condition: user will transfer 1 STX
     const postConditions = [
-      Pc.principal(address).willSendEq(10_000_000).ustx()
+      Pc.principal(address).willSendEq(1_000_000).ustx()
     ]
 
     openContractCall({
@@ -398,7 +398,7 @@ export default function App() {
                 {/* Action Buttons */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <Button onClick={handleEnter} className="w-full py-3 text-sm sm:text-base">
-                    Enter Lottery (10 STX)
+                    Enter Lottery (1 STX)
                   </Button>
                   <Button onClick={handleDraw} className="w-full py-3 text-sm sm:text-base">
                     Draw Winner
@@ -467,7 +467,7 @@ export default function App() {
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="font-bold">2.</span>
-                  <span>Enter the lottery with 10 STX</span>
+                  <span>Enter the lottery with 1 STX</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="font-bold">3.</span>
@@ -485,11 +485,11 @@ export default function App() {
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <div className="bg-gray-900/50 p-3 rounded border border-gray-800 text-center">
                   <div className="text-xs text-gray-400">Entry Fee</div>
-                  <div className="text-lg font-bold">10 STX</div>
+                  <div className="text-lg font-bold">1 STX</div>
                 </div>
                 <div className="bg-gray-900/50 p-3 rounded border border-gray-800 text-center">
                   <div className="text-xs text-gray-400">Min Players</div>
-                  <div className="text-lg font-bold">3</div>
+                  <div className="text-lg font-bold">2</div>
                 </div>
               </div>
             </Card>
