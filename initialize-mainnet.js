@@ -35,6 +35,7 @@ async function initializeLotteryMainnet() {
     senderKey: privateKey,
     network: STACKS_MAINNET,
     anchorMode: AnchorMode.Any,
+    fee: 50000, // Higher fee for faster confirmation
   };
 
   try {
