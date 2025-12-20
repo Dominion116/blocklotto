@@ -19,7 +19,7 @@ async function initializeLotteryMainnet() {
   
   const account = wallet.accounts[0];
   const privateKey = account.stxPrivateKey;
-  const address = getStxAddress({ account, transactionVersion: 0x80 }); // Use same format as deploy
+  const address = 'SP30VGN68PSGVWGNMD0HH2WQMM5T486EK3YGP7Z3Y'; // Your confirmed mainnet address
   
   // Get current block height and set target to current + 100 blocks (~100 minutes)
   const response = await fetch('https://api.hiro.so/v2/info');

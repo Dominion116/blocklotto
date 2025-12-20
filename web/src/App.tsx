@@ -55,7 +55,7 @@ function parseClarityFromAPI(apiResponse: any): any {
   }
 }
 
-const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || 'SP30VGN68PSGVWGNMD0HH2WQMM5T486EK3YGPFZ3Y'
+const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || 'SP30VGN68PSGVWGNMD0HH2WQMM5T486EK3YGP7Z3Y'
 const CONTRACT_NAME = import.meta.env.VITE_CONTRACT_NAME || 'block-lotto'
 const network = new StacksMainnet()
 

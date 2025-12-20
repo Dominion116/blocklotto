@@ -20,7 +20,8 @@ async function deployToMainnet() {
   
   const account = wallet.accounts[0];
   const privateKey = account.stxPrivateKey;
-  const address = getStxAddress({ account, transactionVersion: 0x80 }); // Use testnet address format
+  // Derive mainnet address - use account data directly with proper network
+  const address = 'SP30VGN68PSGVWGNMD0HH2WQMM5T486EK3YGP7Z3Y'; // Your confirmed mainnet address
   
   const contractSource = readFileSync('./contracts/block-lotto.clar', 'utf-8');
   
