@@ -1,0 +1,27 @@
+{
+  "chainhook": {
+    "name": "blocklotto-events",
+    "version": 1,
+    "uuid": "blocklotto-v1",
+    "networks": {
+      "testnet": {
+        "start_block": 0,
+        "if_this": {
+          "scope": "contract_call",
+          "contract_identifier": "ST30VGN68PSGVWGNMD0HH2WQMM5T486EK3WBNTHCY.block-lotto",
+          "method": [
+            "enter-lottery",
+            "draw-winner",
+            "claim-prize"
+          ]
+        },
+        "then_that": {
+          "http_post": {
+            "url": "http://localhost:3001/chainhook",
+            "authorization_header": "Bearer YOUR_SECRET_TOKEN_HERE"
+          }
+        }
+      }
+    }
+  }
+}
