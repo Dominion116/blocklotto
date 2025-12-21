@@ -3,7 +3,7 @@ import { Button } from './components/button'
 import { Card } from './components/card'
 import { userSession, connectWallet, disconnect } from './config'
 import { openContractCall } from '@stacks/connect'
-import { StacksMainnet } from '@stacks/network'
+import { StacksTestnet } from '@stacks/network'
 import * as Pc from '@stacks/transactions/dist/pc'
 import { deserializeCV } from '@stacks/transactions/dist/clarity/deserialize'
 import { cvToValue } from '@stacks/transactions/dist/clarity/clarityValue'
@@ -11,7 +11,7 @@ import { ClarityType } from '@stacks/transactions/dist/clarity/constants'
 
 async function callReadOnlyFunction(options: any) {
   try {
-    const apiUrl = (options.network as any).coreApiUrl || 'https://api.hiro.so'
+    const apiUrl = (options.network as any).coreApiUrl || 'https://api.testnet.hiro.so'
     const response = await fetch(`${apiUrl}/v2/contracts/call-read/${options.contractAddress}/${options.contractName}/${options.functionName}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -55,9 +55,9 @@ function parseClarityFromAPI(apiResponse: any): any {
   }
 }
 
-const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || 'SP30VGN68PSGVWGNMD0HH2WQMM5T486EK3YGP7Z3Y'
+const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || 'ST30VGN68PSGVWGNMD0HH2WQMM5T486EK3WBNTHCY'
 const CONTRACT_NAME = import.meta.env.VITE_CONTRACT_NAME || 'block-lotto'
-const network = new StacksMainnet()
+const network = new StacksTestnet()
 
 export default function App() {
   const [isConnected, setIsConnected] = useState(false)
@@ -73,7 +73,7 @@ export default function App() {
     if (userSession.isUserSignedIn()) {
       setIsConnected(true)
       const userData = userSession.loadUserData()
-      setAddress(userData.profile.stxAddress.mainnet)
+      setAddress(userData.profile.stxAddress.testnet)
     }
     loadLotteryInfo()
     loadCurrentBlock()
@@ -85,7 +85,7 @@ export default function App() {
 
   const loadCurrentBlock = async () => {
     try {
-      const apiUrl = (network as any).coreApiUrl || 'https://api.hiro.so'
+      const apiUrl = (network as any).coreApiUrl || 'https://api.testnet.hiro.so'
       const response = await fetch(`${apiUrl}/v2/info`)
       const data = await response.json()
       setCurrentBlock(data.stacks_tip_height)
