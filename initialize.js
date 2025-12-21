@@ -28,7 +28,7 @@ async function initializeLottery() {
   
   const txOptions = {
     contractAddress: address,
-    contractName: 'block-lotto-v2',
+    contractName: 'block-lotto-v3',
     functionName: 'init',
     functionArgs: [uintCV(targetBlock)],
     senderKey: privateKey,

@@ -57,7 +57,7 @@ function parseClarityFromAPI(apiResponse: any): any {
 }
 
 const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || 'ST30VGN68PSGVWGNMD0HH2WQMM5T486EK3WBNTHCY'
-const CONTRACT_NAME = import.meta.env.VITE_CONTRACT_NAME || 'block-lotto-v2'
+const CONTRACT_NAME = import.meta.env.VITE_CONTRACT_NAME || 'block-lotto-v3'
 const network = new StacksTestnet()
 
 // Log contract configuration on load

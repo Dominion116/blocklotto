@@ -1,14 +1,14 @@
 {
   "chainhook": {
     "name": "blocklotto-events",
-    "version": 2,
-    "uuid": "blocklotto-v2",
+    "version": 3,
+    "uuid": "blocklotto-v3",
     "networks": {
       "testnet": {
         "start_block": 0,
         "if_this": {
           "scope": "contract_call",
-          "contract_identifier": "ST30VGN68PSGVWGNMD0HH2WQMM5T486EK3WBNTHCY.block-lotto-v2",
+          "contract_identifier": "ST30VGN68PSGVWGNMD0HH2WQMM5T486EK3WBNTHCY.block-lotto-v3",
           "method": [
             "enter-lottery",
             "draw-winner",

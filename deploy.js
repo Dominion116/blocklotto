@@ -8,7 +8,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 async function deployContract() {
-  const contractName = 'block-lotto-v2';
+  const contractName = 'block-lotto-v3';
   const codeBody = fs.readFileSync('./contracts/block-lotto.clar', 'utf8');
   
   const mnemonic = process.env.STACKS_TESTNET_MNEMONIC;
