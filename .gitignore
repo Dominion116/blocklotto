@@ -5,6 +5,8 @@
 history.txt
 .env
 chainhooks/.env
+website/.env
+website/.env.example
 
 logs
 *.log
