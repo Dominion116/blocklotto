@@ -132,7 +132,7 @@ app.post('/chainhook', async (req, res) => {
 async function fetchLotteryInfo() {
   try {
     const contractAddress = 'ST30VGN68PSGVWGNMD0HH2WQMM5T486EK3WBNTHCY';
-    const contractName = 'block-lotto';
+    const contractName = 'block-lotto-v2';
     const apiUrl = 'https://api.testnet.hiro.so';
     
     const response = await fetch(
