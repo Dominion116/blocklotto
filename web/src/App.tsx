@@ -157,22 +157,12 @@ export default function App() {
         setPaused(pausedBool)
         
         // Check if winner exists (optional type)
-        console.log('Winner CV full object:', JSON.stringify(winnerCV, null, 2))
-        console.log('Winner CV type:', winnerCV?.type)
-        
         if (winnerCV?.type === ClarityType.OptionalSome) {
-          console.log('Winner has value!')
           const winnerPrincipal = winnerCV.value
-          console.log('Winner principal:', winnerPrincipal)
-          console.log('Winner principal type:', winnerPrincipal?.type)
-          
-          // Try different ways to extract the address
-          const winnerAddress = winnerPrincipal?.address || 
-                               winnerPrincipal?.value?.address ||
-                               (typeof winnerPrincipal === 'string' ? winnerPrincipal : null)
-          
-          console.log('Extracted winner address:', winnerAddress)
-          setWinner(winnerAddress)
+          // Principal has structure: { type: "address", value: "ST..." }
+          const winnerAddress = winnerPrincipal?.value || winnerPrincipal?.address
+          console.log('✅ Winner found:', winnerAddress)
+          setWinner(winnerAddress || null)
         } else {
           console.log('No winner yet (optional none)')
           setWinner(null)
