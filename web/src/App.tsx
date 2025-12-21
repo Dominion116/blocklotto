@@ -60,11 +60,21 @@ const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || 'ST30VGN68PSGV
 const CONTRACT_NAME = import.meta.env.VITE_CONTRACT_NAME || 'block-lotto-v2'
 const network = new StacksTestnet()
 
+// Log contract configuration on load
+console.log('🔧 CONTRACT CONFIGURATION:')
+console.log('   Address:', CONTRACT_ADDRESS)
+console.log('   Name:', CONTRACT_NAME)
+console.log('   Full ID:', `${CONTRACT_ADDRESS}.${CONTRACT_NAME}`)
+console.log('   Env vars:', { 
+  VITE_CONTRACT_ADDRESS: import.meta.env.VITE_CONTRACT_ADDRESS,
+  VITE_CONTRACT_NAME: import.meta.env.VITE_CONTRACT_NAME
+})
+
 export default function App() {
   const [isConnected, setIsConnected] = useState(false)
   const [address, setAddress] = useState<string>('')
   const [status, setStatus] = useState<string>('Open')
-  const [targetBlock, setTargetBlock] = useState<number>(3701042)
+  const [targetBlock, setTargetBlock] = useState<number>(0)
   const [totalParticipants, setTotalParticipants] = useState<number>(0)
   const [winner, setWinner] = useState<string | null>(null)
   const [paused, setPaused] = useState<boolean>(false)
@@ -135,7 +145,7 @@ export default function App() {
         
         // Extract values from Clarity types
         const statusNum = statusCV?.type === ClarityType.UInt ? Number(statusCV.value) : 0
-        const targetBlockNum = targetBlockCV?.type === ClarityType.UInt ? Number(targetBlockCV.value) : 3701042
+        const targetBlockNum = targetBlockCV?.type === ClarityType.UInt ? Number(targetBlockCV.value) : 0
         const participantsNum = participantsCV?.type === ClarityType.UInt ? Number(participantsCV.value) : 0
         const pausedBool = pausedCV?.type === ClarityType.BoolTrue
         
