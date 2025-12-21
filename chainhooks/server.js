@@ -174,6 +174,19 @@ async function fetchLotteryInfo() {
   }
 }
 
+// Root endpoint for WebSocket upgrade
+app.get('/', (req, res) => {
+  if (req.headers.upgrade === 'websocket') {
+    // WebSocket upgrade will be handled by the ws library
+    return;
+  }
+  res.json({ 
+    status: 'ok',
+    message: 'BlockLotto Notifications Server',
+    connectedClients: clients.size
+  });
+});
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ 
