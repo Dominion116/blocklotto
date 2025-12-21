@@ -15,6 +15,7 @@ const server = app.listen(port, '0.0.0.0', () => {
   console.log(`🚀 Chainhook server running on port ${port}`);
   console.log(`📡 WebSocket server running on same port ${port}`);
   console.log(`💡 Connected clients: ${clients.size}`);
+  console.log(`✅ Server ready for connections`);
 });
 
 // WebSocket server attached to HTTP server (same port)
