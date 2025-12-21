@@ -1,14 +1,14 @@
 {
   "chain": "stacks",
-  "uuid": "1",
-  "name": "blocklotto-events",
+  "uuid": "2",
+  "name": "blocklotto-draw-winner",
   "version": 1,
   "networks": {
     "testnet": {
       "if_this": {
         "scope": "contract_call",
         "contract_identifier": "ST30VGN68PSGVWGNMD0HH2WQMM5T486EK3WBNTHCY.block-lotto-v3",
-        "method": "enter-lottery"
+        "method": "draw-winner"
       },
       "then_that": {
         "http_post": {

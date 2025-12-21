@@ -1,14 +1,14 @@
 {
   "chain": "stacks",
-  "uuid": "1",
-  "name": "blocklotto-events",
+  "uuid": "3",
+  "name": "blocklotto-claim-prize",
   "version": 1,
   "networks": {
     "testnet": {
       "if_this": {
         "scope": "contract_call",
         "contract_identifier": "ST30VGN68PSGVWGNMD0HH2WQMM5T486EK3WBNTHCY.block-lotto-v3",
-        "method": "enter-lottery"
+        "method": "claim-prize"
       },
       "then_that": {
         "http_post": {
