@@ -1,28 +1,26 @@
 {
-  "chainhook": {
-    "name": "blocklotto-events",
-    "version": 3,
-    "uuid": "blocklotto-v3",
-    "chain": "stacks",
-    "networks": {
-      "testnet": {
-        "start_block": 0,
-        "if_this": {
-          "scope": "contract_call",
-          "contract_identifier": "ST30VGN68PSGVWGNMD0HH2WQMM5T486EK3WBNTHCY.block-lotto-v3",
-          "method": [
-            "enter-lottery",
-            "draw-winner",
-            "claim-prize"
-          ]
-        },
-        "then_that": {
-          "http_post": {
-            "url": "https://blocklotto-notifications.onrender.com/chainhook",
-            "authorization_header": "Bearer cd7522790a33646d06a97e017c813e73a950611fdd57cc55c6f6557e0c09a7df"
-          }
+  "chain": "stacks",
+  "uuid": "blocklotto-v3",
+  "name": "blocklotto-events",
+  "version": 1,
+  "networks": {
+    "testnet": {
+      "if_this": {
+        "scope": "contract_call",
+        "contract_identifier": "ST30VGN68PSGVWGNMD0HH2WQMM5T486EK3WBNTHCY.block-lotto-v3",
+        "method": [
+          "enter-lottery",
+          "draw-winner",
+          "claim-prize"
+        ]
+      },
+      "then_that": {
+        "http_post": {
+          "url": "https://blocklotto-notifications.onrender.com/chainhook",
+          "authorization_header": "Bearer cd7522790a33646d06a97e017c813e73a950611fdd57cc55c6f6557e0c09a7df"
         }
-      }
+      },
+      "start_block": 0
     }
   }
 }
