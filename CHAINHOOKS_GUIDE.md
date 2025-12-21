@@ -25,22 +25,20 @@ Server will run on:
 
 ### 3. Register Chainhook
 
-**Option A: Using Hiro Platform (Easiest)**
+**Using Hiro Platform (Recommended - No CLI needed)**
+
 1. Go to https://platform.hiro.so
-2. Sign in/create account
-3. Navigate to "Chainhooks"
-4. Click "New Chainhook"
-5. Upload `chainhooks/chainhook-config.json`
-6. Make sure your webhook URL is publicly accessible (use ngrok for local testing)
+2. Sign in with GitHub or create account
+3. Navigate to **"Chainhooks"** in sidebar
+4. Click **"Create Chainhook"**
+5. Choose **"Testnet"**
+6. Paste the contents of `chainhooks/chainhook-config.json`
+7. **Important**: Update the webhook URL to your public endpoint:
+   - For local testing: Use ngrok (see step 4)
+   - For production: Use your deployed server URL
+8. Click **"Create"** and the chainhook will start listening
 
-**Option B: Using Chainhook CLI**
-```bash
-# Install chainhook
-brew install hirosystems/tap/chainhook
-
-# Apply chainhook
-chainhook predicates apply chainhooks/chainhook-config.json --testnet
-```
+Your chainhook is now registered! It will automatically send webhooks when lottery events occur.
 
 ### 4. Expose Local Server (For Testing)
 
