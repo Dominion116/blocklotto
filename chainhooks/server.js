@@ -7,11 +7,12 @@ dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3001;
+const wsPort = process.env.WS_PORT || 3002;
 
 app.use(express.json());
 
 // WebSocket server for real-time notifications to frontend
-const wss = new WebSocketServer({ port: 3002 });
+const wss = new WebSocketServer({ port: wsPort });
 
 const clients = new Set();
 
@@ -183,8 +184,8 @@ app.post('/test-notification', (req, res) => {
   res.json({ status: 'sent', clients: clients.size });
 });
 
-app.listen(port, () => {
-  console.log(`🚀 Chainhook server running on http://localhost:${port}`);
-  console.log(`📡 WebSocket server running on ws://localhost:3002`);
+app.listen(port, '0.0.0.0', () => {
+  console.log(`🚀 Chainhook server running on port ${port}`);
+  console.log(`📡 WebSocket server running on port ${wsPort}`);
   console.log(`💡 Connected clients: ${clients.size}`);
 });

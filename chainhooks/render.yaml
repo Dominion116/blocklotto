@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: blocklotto-notifications
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: WS_PORT
+        value: 3002
+      - key: CHAINHOOK_SECRET
+        generateValue: true
+      - key: CONTRACT_ADDRESS
+        value: ST30VGN68PSGVWGNMD0HH2WQMM5T486EK3WBNTHCY
+      - key: CONTRACT_NAME
+        value: block-lotto-v2
