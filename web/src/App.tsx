@@ -329,6 +329,43 @@ export default function App() {
     })
   }
 
+  const handleResetLottery = async () => {
+    if (!isConnected) {
+      connectWallet()
+      return
+    }
+
+    try {
+      // Get current block and add 10 for new target
+      const apiUrl = (network as any).coreApiUrl || 'https://api.testnet.hiro.so'
+      const response = await fetch(`${apiUrl}/v2/info`)
+      const data = await response.json()
+      const newTargetBlock = data.stacks_tip_height + 10
+
+      const targetBlockCV = Pc.uint(newTargetBlock)
+
+      openContractCall({
+        network,
+        contractAddress: CONTRACT_ADDRESS,
+        contractName: CONTRACT_NAME,
+        functionName: 'reset-lottery',
+        functionArgs: [targetBlockCV],
+        postConditionMode: 'allow',
+        onFinish: (data) => {
+          console.log('Transaction:', data.txId)
+          alert(`New lottery started! Target block: ${newTargetBlock}\nTransaction ID: ${data.txId}`)
+          setTimeout(loadLotteryInfo, 2000)
+        },
+        onCancel: () => {
+          console.log('Transaction cancelled')
+        }
+      })
+    } catch (error) {
+      console.error('Error resetting lottery:', error)
+      alert('Failed to reset lottery')
+    }
+  }
+
   return (
     <div className="min-h-screen bg-black text-white font-sans">
       {/* Header */}
@@ -451,6 +488,11 @@ export default function App() {
             {/* Admin Controls */}
             <Card title="Admin Controls">
               <div className="flex flex-col gap-3">
+                {status === 'Completed' && (
+                  <Button onClick={handleResetLottery} className="w-full py-3 bg-green-600 hover:bg-green-700">
+                    🎲 Start New Lottery
+                  </Button>
+                )}
                 <Button onClick={handlePause} className="w-full py-3">
                   Pause Lottery
                 </Button>
