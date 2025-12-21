@@ -3,6 +3,7 @@
     "name": "blocklotto-events",
     "version": 3,
     "uuid": "blocklotto-v3",
+    "chain": "stacks",
     "networks": {
       "testnet": {
         "start_block": 0,
