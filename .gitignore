@@ -8,10 +8,42 @@ chainhooks/.env
 website/.env
 website/.env.example
 
+# Documentation (except README)
+*.md
+!README.md
+
+# Backup files
+*.backup
+*.bak
+*-backup.*
+contracts/*-backup.clar
+
+# Logs
 logs
 *.log
 npm-debug.log*
 coverage
 *.info
 costs-reports.json
+
+# Dependencies
 node_modules
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDE
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+.idea
+*.swp
+*.swo
+*~
+
+# Build outputs
+dist
+build
+*.tsbuildinfo

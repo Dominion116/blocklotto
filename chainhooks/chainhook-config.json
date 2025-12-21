@@ -18,7 +18,7 @@
         "then_that": {
           "http_post": {
             "url": "http://localhost:3001/chainhook",
-            "authorization_header": "Bearer YOUR_SECRET_TOKEN_HERE"
+            "authorization_header": "Bearer cd7522790a33646d06a97e017c813e73a950611fdd57cc55c6f6557e0c09a7df"
           }
         }
       }
