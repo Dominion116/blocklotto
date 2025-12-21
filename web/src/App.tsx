@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Button } from './components/button'
 import { Card } from './components/card'
+import { NotificationBell } from './components/notifications'
 import { userSession, connectWallet, disconnect } from './config'
 import { openContractCall } from '@stacks/connect'
 import { StacksTestnet } from '@stacks/network'
@@ -342,6 +343,7 @@ export default function App() {
             </div>
             {isConnected ? (
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
+                <NotificationBell />
                 <span className="text-xs sm:text-sm text-gray-400 font-mono bg-gray-900 px-3 py-1.5 rounded-lg border border-gray-800">
                   {address.slice(0, 8)}...{address.slice(-6)}
                 </span>

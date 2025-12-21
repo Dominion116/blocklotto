@@ -4,6 +4,7 @@
 .cache/**
 history.txt
 .env
+chainhooks/.env
 
 logs
 *.log
