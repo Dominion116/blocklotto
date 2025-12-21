@@ -14,7 +14,7 @@ interface NotificationProps {
   wsUrl?: string
 }
 
-export function useNotifications({ wsUrl = 'ws://localhost:3002' }: NotificationProps = {}) {
+export function useNotifications({ wsUrl = 'wss://blocklotto-notifications.onrender.com' }: NotificationProps = {}) {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [isConnected, setIsConnected] = useState(false)
   const wsRef = useRef<WebSocket | null>(null)
