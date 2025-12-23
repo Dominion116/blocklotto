@@ -10,7 +10,6 @@ import { uintCV } from '@stacks/transactions'
 import { deserializeCV } from '@stacks/transactions/dist/clarity/deserialize'
 import { cvToValue } from '@stacks/transactions/dist/clarity/clarityValue'
 import { ClarityType } from '@stacks/transactions/dist/clarity/constants'
-import { useAccount, useDisconnect } from 'wagmi'
 import { modal } from './reown-config'
 
 async function callReadOnlyFunction(options: any) {
@@ -74,11 +73,7 @@ console.log('   Env vars:', {
 })
 
 export default function App() {
-  // Reown hooks
-  const { address: evmAddress, isConnected: isEvmConnected } = useAccount()
-  const { disconnect: disconnectEvm } = useDisconnect()
-
-  // Stacks state
+  // State
   const [isConnected, setIsConnected] = useState(false)
   const [address, setAddress] = useState<string>('')
   const [status, setStatus] = useState<string>('Open')
@@ -199,12 +194,11 @@ export default function App() {
   }
 
   const handleDisconnect = async () => {
-    // Disconnect both EVM and Stacks wallets
-    if (isEvmConnected) {
-      disconnectEvm()
-    }
+    // Disconnect Stacks wallet or Reown modal
     if (isConnected) {
       disconnect()
+    } else {
+      modal.close()
     }
   }
 
@@ -396,19 +390,12 @@ export default function App() {
               </h1>
               <p className="text-xs sm:text-sm text-gray-400 mt-1">Decentralized lottery on Stacks</p>
             </div>
-            {isConnected || isEvmConnected ? (
+            {isConnected ? (
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
                 <NotificationBell />
-                {isConnected && (
-                  <span className="text-xs sm:text-sm text-gray-400 font-mono bg-gray-900 px-3 py-1.5 rounded-lg border border-gray-800">
-                    STX: {address.slice(0, 8)}...{address.slice(-6)}
-                  </span>
-                )}
-                {isEvmConnected && evmAddress && (
-                  <span className="text-xs sm:text-sm text-gray-400 font-mono bg-gray-900 px-3 py-1.5 rounded-lg border border-gray-800">
-                    EVM: {evmAddress.slice(0, 6)}...{evmAddress.slice(-4)}
-                  </span>
-                )}
+                <span className="text-xs sm:text-sm text-gray-400 font-mono bg-gray-900 px-3 py-1.5 rounded-lg border border-gray-800">
+                  {address.slice(0, 8)}...{address.slice(-6)}
+                </span>
                 <Button onClick={handleDisconnect} className="w-full sm:w-auto">Disconnect</Button>
               </div>
             ) : (
