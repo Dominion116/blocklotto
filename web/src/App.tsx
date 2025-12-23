@@ -6,9 +6,12 @@ import { userSession, connectWallet, disconnect } from './config'
 import { openContractCall } from '@stacks/connect'
 import { StacksTestnet } from '@stacks/network'
 import * as Pc from '@stacks/transactions/dist/pc'
+import { uintCV } from '@stacks/transactions'
 import { deserializeCV } from '@stacks/transactions/dist/clarity/deserialize'
 import { cvToValue } from '@stacks/transactions/dist/clarity/clarityValue'
 import { ClarityType } from '@stacks/transactions/dist/clarity/constants'
+import { useAccount, useDisconnect } from 'wagmi'
+import { modal } from './reown-config'
 
 async function callReadOnlyFunction(options: any) {
   try {
@@ -71,6 +74,11 @@ console.log('   Env vars:', {
 })
 
 export default function App() {
+  // Reown hooks
+  const { address: evmAddress, isConnected: isEvmConnected } = useAccount()
+  const { disconnect: disconnectEvm } = useDisconnect()
+
+  // Stacks state
   const [isConnected, setIsConnected] = useState(false)
   const [address, setAddress] = useState<string>('')
   const [status, setStatus] = useState<string>('Open')
@@ -81,6 +89,7 @@ export default function App() {
   const [currentBlock, setCurrentBlock] = useState<number>(0)
 
   useEffect(() => {
+    // Check for Stacks wallet connection
     if (userSession.isUserSignedIn()) {
       setIsConnected(true)
       const userData = userSession.loadUserData()
@@ -184,16 +193,26 @@ export default function App() {
     return codes[statusCode] || 'Unknown'
   }
 
+  const handleConnect = async () => {
+    // Open Reown modal
+    modal.open()
+  }
+
+  const handleDisconnect = async () => {
+    // Disconnect both EVM and Stacks wallets
+    if (isEvmConnected) {
+      disconnectEvm()
+    }
+    if (isConnected) {
+      disconnect()
+    }
+  }
+
   const handleEnter = () => {
     if (!isConnected) {
       connectWallet()
       return
     }
-
-    // Create post condition: user will transfer 1 STX
-    const postConditions = [
-      Pc.principal(address).willSendEq(1_000_000).ustx()
-    ]
 
     openContractCall({
       network,
@@ -201,8 +220,7 @@ export default function App() {
       contractName: CONTRACT_NAME,
       functionName: 'enter-lottery',
       functionArgs: [],
-      postConditions,
-      postConditionMode: 'deny',
+      postConditionMode: 'allow',
       onFinish: (data) => {
         console.log('Transaction:', data.txId)
         alert('Entry submitted! Transaction ID: ' + data.txId)
@@ -342,7 +360,7 @@ export default function App() {
       const data = await response.json()
       const newTargetBlock = data.stacks_tip_height + 10
 
-      const targetBlockCV = Pc.uint(newTargetBlock)
+      const targetBlockCV = uintCV(newTargetBlock)
 
       openContractCall({
         network,
@@ -378,16 +396,23 @@ export default function App() {
               </h1>
               <p className="text-xs sm:text-sm text-gray-400 mt-1">Decentralized lottery on Stacks</p>
             </div>
-            {isConnected ? (
+            {isConnected || isEvmConnected ? (
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
                 <NotificationBell />
-                <span className="text-xs sm:text-sm text-gray-400 font-mono bg-gray-900 px-3 py-1.5 rounded-lg border border-gray-800">
-                  {address.slice(0, 8)}...{address.slice(-6)}
-                </span>
-                <Button onClick={disconnect} className="w-full sm:w-auto">Disconnect</Button>
+                {isConnected && (
+                  <span className="text-xs sm:text-sm text-gray-400 font-mono bg-gray-900 px-3 py-1.5 rounded-lg border border-gray-800">
+                    STX: {address.slice(0, 8)}...{address.slice(-6)}
+                  </span>
+                )}
+                {isEvmConnected && evmAddress && (
+                  <span className="text-xs sm:text-sm text-gray-400 font-mono bg-gray-900 px-3 py-1.5 rounded-lg border border-gray-800">
+                    EVM: {evmAddress.slice(0, 6)}...{evmAddress.slice(-4)}
+                  </span>
+                )}
+                <Button onClick={handleDisconnect} className="w-full sm:w-auto">Disconnect</Button>
               </div>
             ) : (
-              <Button onClick={connectWallet} className="w-full sm:w-auto">Connect Wallet</Button>
+              <Button onClick={handleConnect} className="w-full sm:w-auto">Connect Wallet</Button>
             )}
           </div>
         </div>
