@@ -1,12 +1,11 @@
 import { createAppKit } from '@reown/appkit'
 import { QueryClient } from '@tanstack/react-query'
-import type { AppKitNetwork } from '@reown/appkit'
 
 // 1. Get projectId from https://cloud.reown.com
 const projectId = import.meta.env.VITE_REOWN_PROJECT_ID || import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || 'YOUR_PROJECT_ID'
 
-// 2. Define Stacks network
-const stacksTestnet: AppKitNetwork = {
+// 2. Define Stacks networks
+const stacksTestnet = {
   id: 'stacks:2147483648',
   chainId: 2147483648,
   name: 'Stacks Testnet',
@@ -15,7 +14,7 @@ const stacksTestnet: AppKitNetwork = {
   rpcUrl: 'https://api.testnet.hiro.so'
 }
 
-const stacksMainnet: AppKitNetwork = {
+const stacksMainnet = {
   id: 'stacks:1',
   chainId: 1,
   name: 'Stacks Mainnet',
@@ -24,7 +23,7 @@ const stacksMainnet: AppKitNetwork = {
   rpcUrl: 'https://api.mainnet.hiro.so'
 }
 
-const networks: [AppKitNetwork, ...AppKitNetwork[]] = [stacksTestnet, stacksMainnet]
+const networks = [stacksTestnet, stacksMainnet]
 
 // 3. Create modal
 export const modal = createAppKit({
