@@ -1,28 +1,36 @@
 import { createAppKit } from '@reown/appkit'
-import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
-import { mainnet, sepolia } from '@reown/appkit/networks'
-import { WagmiProvider } from 'wagmi'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { QueryClient } from '@tanstack/react-query'
 
 // 1. Get projectId from https://cloud.reown.com
 const projectId = import.meta.env.VITE_REOWN_PROJECT_ID || import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || 'YOUR_PROJECT_ID'
 
-// 2. Create wagmiAdapter
-const networks = [mainnet, sepolia]
+// 2. Define Stacks networks
+const stacksTestnet = {
+  id: 'stacks:2147483648',
+  chainId: 2147483648,
+  name: 'Stacks Testnet',
+  currency: 'STX',
+  explorerUrl: 'https://explorer.hiro.so',
+  rpcUrl: 'https://api.testnet.hiro.so'
+}
 
-export const wagmiAdapter = new WagmiAdapter({
-  networks,
-  projectId,
-  ssr: false
-})
+const stacksMainnet = {
+  id: 'stacks:1',
+  chainId: 1,
+  name: 'Stacks Mainnet',
+  currency: 'STX',
+  explorerUrl: 'https://explorer.hiro.so',
+  rpcUrl: 'https://api.mainnet.hiro.so'
+}
+
+const networks = [stacksTestnet, stacksMainnet]
 
 // 3. Create modal
 export const modal = createAppKit({
-  adapters: [wagmiAdapter],
   networks,
   projectId,
   features: {
-    analytics: true
+    analytics: false
   },
   themeMode: 'dark',
   themeVariables: {
