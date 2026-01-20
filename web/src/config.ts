@@ -1,4 +1,5 @@
 import { AppConfig, UserSession } from '@stacks/auth'
+// @ts-ignore
 import { showConnect } from '@stacks/connect'
 
 const appConfig = new AppConfig(['store_write', 'publish_data'])

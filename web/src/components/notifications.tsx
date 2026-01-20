@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
-interface Notification {
+interface AppNotification {
   type: string
   title: string
   message: string
@@ -15,7 +15,7 @@ interface NotificationProps {
 }
 
 export function useNotifications({ wsUrl = 'wss://blocklotto-notifications.onrender.com' }: NotificationProps = {}) {
-  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [notifications, setNotifications] = useState<AppNotification[]>([])
   const [isConnected, setIsConnected] = useState(false)
   const wsRef = useRef<WebSocket | null>(null)
 
@@ -29,14 +29,14 @@ export function useNotifications({ wsUrl = 'wss://blocklotto-notifications.onren
     }
 
     ws.onmessage = (event) => {
-      const notification: Notification = JSON.parse(event.data)
+      const notification: AppNotification = JSON.parse(event.data)
       console.log('🔔 Notification:', notification)
       
       setNotifications(prev => [notification, ...prev].slice(0, 10)) // Keep last 10
       
       // Show browser notification if permitted
-      if (Notification.permission === 'granted') {
-        new Notification(notification.title, {
+      if (typeof window !== 'undefined' && 'Notification' in window && window.Notification.permission === 'granted') {
+        new window.Notification(notification.title, {
           body: notification.message,
           icon: '/favicon.ico',
           tag: notification.txid || notification.type
@@ -60,8 +60,8 @@ export function useNotifications({ wsUrl = 'wss://blocklotto-notifications.onren
     }
 
     // Request notification permission
-    if (Notification.permission === 'default') {
-      Notification.requestPermission()
+    if (typeof window !== 'undefined' && 'Notification' in window && window.Notification.permission === 'default') {
+      window.Notification.requestPermission()
     }
 
     return () => {
