@@ -152,6 +152,7 @@ export default function App() {
     return codes[statusCode] || 'Unknown'
   }
 
+
   const handleConnect = () => {
     connectWallet()
   }
