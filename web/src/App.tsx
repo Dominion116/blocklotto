@@ -5,12 +5,12 @@ import { NotificationBell } from './components/notifications'
 import { userSession, connectWallet, disconnect } from './config'
 import { openContractCall } from '@stacks/connect'
 import { StacksTestnet } from '@stacks/network'
-import * as Pc from '@stacks/transactions/dist/pc'
-import { uintCV } from '@stacks/transactions'
-import { deserializeCV } from '@stacks/transactions/dist/clarity/deserialize'
-import { cvToValue } from '@stacks/transactions/dist/clarity/clarityValue'
-import { ClarityType } from '@stacks/transactions/dist/clarity/constants'
-import { modal } from './reown-config'
+import { 
+  uintCV, 
+  deserializeCV, 
+  ClarityType
+} from '@stacks/transactions'
+
 
 async function callReadOnlyFunction(options: any) {
   try {
@@ -188,17 +188,15 @@ export default function App() {
     return codes[statusCode] || 'Unknown'
   }
 
-  const handleConnect = async () => {
-    // Open Reown modal
-    modal.open()
+  /* REMOVED Reown imports and modal usage */
+
+  const handleConnect = () => {
+    connectWallet()
   }
 
-  const handleDisconnect = async () => {
-    // Disconnect Stacks wallet or Reown modal
+  const handleDisconnect = () => {
     if (isConnected) {
       disconnect()
-    } else {
-      modal.close()
     }
   }
 
