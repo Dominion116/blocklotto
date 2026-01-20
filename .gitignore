@@ -3,7 +3,6 @@
 **/settings/Testnet.toml
 .cache/**
 history.txt
-.env
 chainhooks/.env
 website/.env
 website/.env.example
@@ -35,7 +34,6 @@ node_modules
 .LSOverride
 
 # IDE
-.vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 .idea
@@ -47,3 +45,4 @@ node_modules
 dist
 build
 *.tsbuildinfo
+config.bat
